@@ -36,7 +36,7 @@
 
             <!-- Кнопка для вызова окна поиска с новой иконкой -->
             <Button Width="50" Height="30" Margin="10,0,0,0" Click="OpenSearchWindow_Click">
-                <Image Source="/binoculars_with_bytes.png"/>
+                <Image Source="/find.png"/>
             </Button>
         </StackPanel>
 
