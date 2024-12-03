@@ -8,8 +8,25 @@ namespace ProbyteEdit_Client
 {
     public partial class SearchWindow : Window
     {
-        private readonly string hexData;
+
+        // Класс для представления результатов поиска
+        private class HexSearchResult
+        {
+            public HexSearchResult(int index = 0, string address = "", string hexValue = "")
+            {
+                Index = index;
+                Address = address;
+                HexValue = hexValue;
+            }
+
+            public int Index { get; }
+            public string Address { get; }
+            public string HexValue { get; }
+        }
+
+        private readonly string hexData = "";
         private readonly HexViewerWindow parentWindow;
+
 
         public SearchWindow(string hexData, HexViewerWindow parent)
         {
@@ -28,9 +45,9 @@ namespace ProbyteEdit_Client
             }
 
             // Получение выбранного формата поиска
-            string selectedFormat = (SearchFormatComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string? selectedFormat = (SearchFormatComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            List<HexSearchResult> searchResults = new List<HexSearchResult>();
+            List<HexSearchResult> searchResults = new();
             int startIndex = 0;
             int foundIndex;
             int count = 1;
@@ -42,12 +59,7 @@ namespace ProbyteEdit_Client
                     // Поиск в шестнадцатеричном представлении
                     while ((foundIndex = hexData.IndexOf(searchText, startIndex, StringComparison.OrdinalIgnoreCase)) != -1)
                     {
-                        searchResults.Add(new HexSearchResult
-                        {
-                            Index = count++,
-                            Address = $"0x{foundIndex:X8}",
-                            HexValue = searchText
-                        });
+                        searchResults.Add(new HexSearchResult(count++, $"0x{foundIndex:X8}", searchText));
 
                         // Прокручиваем к найденному значению и выделяем его в основном окне
                         parentWindow.ScrollToFoundValue(foundIndex, searchText.Length);
@@ -83,12 +95,7 @@ namespace ProbyteEdit_Client
                     startIndex = 0;
                     while ((foundIndex = FindDecimalInTextBox(decimalSearchString, startIndex)) != -1)
                     {
-                        searchResults.Add(new HexSearchResult
-                        {
-                            Index = count++,
-                            Address = $"0x{foundIndex:X8}",
-                            HexValue = decimalSearchString
-                        });
+                        searchResults.Add(new HexSearchResult(count++, $"0x{foundIndex:X8}", decimalSearchString));
 
                         // Прокручиваем к найденному значению и выделяем его в основном окне
                         parentWindow.ScrollToFoundValue(foundIndex, decimalSearchString.Length);
@@ -112,12 +119,7 @@ namespace ProbyteEdit_Client
                         startIndex = 0;
                         while ((foundIndex = FindBinaryInTextBox(binarySearchString, startIndex)) != -1)
                         {
-                            searchResults.Add(new HexSearchResult
-                            {
-                                Index = count++,
-                                Address = $"0x{foundIndex:X8}",
-                                HexValue = binarySearchString
-                            });
+                            searchResults.Add(new HexSearchResult(count++, $"0x{foundIndex:X8}", binarySearchString));
 
                             // Прокручиваем к найденному значению и выделяем его в основном окне
                             parentWindow.ScrollToFoundValue(foundIndex, binarySearchString.Length);
@@ -137,11 +139,11 @@ namespace ProbyteEdit_Client
                     return;
             }
 
-            if (searchResults.Count > 0)
+            if (searchResults.Count != 0)
             {
                 SearchResultsDataGrid.ItemsSource = searchResults;
             }
-            else
+            if (searchResults.Count == 0)
             {
                 MessageBox.Show("Значение не найдено.");
             }
@@ -180,13 +182,5 @@ namespace ProbyteEdit_Client
         {
             this.Close(); // Закрывает текущее окно поиска
         }
-    }
-
-    // Класс для представления результатов поиска
-    public class HexSearchResult
-    {
-        public int Index { get; set; }
-        public string Address { get; set; }
-        public string HexValue { get; set; }
     }
 }

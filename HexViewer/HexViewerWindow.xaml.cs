@@ -9,7 +9,7 @@ namespace ProbyteEdit_Client
     public partial class HexViewerWindow : Window
     {
         private readonly byte[] fileBytes;
-        private int bytesPerLine = 16; // Количество байтов на строку
+        private readonly int bytesPerLine = 16; // Количество байтов на строку        
 
         public HexViewerWindow(byte[] fileBytes)
         {
@@ -214,11 +214,6 @@ namespace ProbyteEdit_Client
             }
         }
 
-
-
-
-
-
         // Метод для подсветки всех найденных значений
         public void HighlightFoundValues(List<int> foundIndices, string searchText)
         {
@@ -262,8 +257,10 @@ namespace ProbyteEdit_Client
         // Метод для открытия окна поиска
         private void OpenSearchWindow_Click(object sender, RoutedEventArgs e)
         {
-            SearchWindow searchWindow = new SearchWindow(HexTextBox.Text, this);
-            searchWindow.Owner = this; // Устанавливаем родительское окно
+            SearchWindow searchWindow = new(HexTextBox.Text, this)
+            {
+                Owner = this // Устанавливаем родительское окно
+            };
             searchWindow.Show(); // Открываем окно без блокировки основного окна
         }
     }
