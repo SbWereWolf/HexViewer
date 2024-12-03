@@ -1,0 +1,59 @@
+﻿<Window x:Class="ProbyteEdit_Client.SearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Search in Hex Viewer" Height="400" Width="600" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Панель для ввода поискового значения -->
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
+            <TextBox x:Name="SearchBox" Width="200" Height="30" Margin="0,0,10,0" />
+            <ComboBox x:Name="SearchFormatComboBox" Width="100" Height="30" Margin="0,0,10,0">
+                <ComboBoxItem Content="Hex" IsSelected="True" />
+                <ComboBoxItem Content="Decimal" />
+                <ComboBoxItem Content="Binary" />
+            </ComboBox>
+            <Button Content="Поиск" Width="100" Height="30" Click="SearchButton_Click"/>
+        </StackPanel>
+
+
+        <!-- Результаты поиска с использованием DataGrid -->
+        <DataGrid x:Name="SearchResultsDataGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  HeadersVisibility="Column"
+                  Grid.Row="1"
+                  Margin="10"
+                  SelectionMode="Single"
+                  SelectionChanged="SearchResultsDataGrid_SelectionChanged">
+            <!-- Определение столбцов для DataGrid -->
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№"
+                                    Binding="{Binding Index}"
+                                    Width="Auto"
+                                    IsReadOnly="True" />
+                <DataGridTextColumn Header="Адрес"
+                                    Binding="{Binding Address}"
+                                    Width="*"
+                                    IsReadOnly="True" />
+                <DataGridTextColumn Header="Найденные данные"
+                                    Binding="{Binding HexValue}"
+                                    Width="*"
+                                    IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Кнопка Закрыть -->
+        <Button Content="Закрыть"
+                Grid.Row="2"
+                HorizontalAlignment="Right"
+                Width="100"
+                Height="30"
+                Margin="10"
+                Click="CloseButton_Click"/>
+    </Grid>
+</Window>
