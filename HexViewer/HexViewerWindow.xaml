@@ -55,7 +55,7 @@
         <Grid Grid.Row="1" Grid.Column="1"/>
 
         <!-- Область для отображения HEX данных -->
-        <ScrollViewer x:Name="HexScrollViewer" Grid.Row="1" Grid.Column="2" Margin="5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="HexScrollViewer" Grid.Row="1" Grid.Column="2" Margin="5" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
             <TextBox x:Name="HexTextBox"
                      FontFamily="Consolas"
                      FontSize="12"
