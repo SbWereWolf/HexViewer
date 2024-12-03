@@ -21,22 +21,22 @@
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0" Grid.ColumnSpan="5">
             <!-- Кнопка для Decimal представления -->
             <Button Width="50" Height="30" Margin="5,0,0,0" Click="ShowDecimalView_Click">
-                <Image Source="/decimal_icon.png"/>
+                <Image Source="decimal_icon.png"/>
             </Button>
 
             <!-- Кнопка для Hex представления -->
             <Button Width="50" Height="30" Margin="5,0,0,0" Click="ShowHexView_Click">
-                <Image Source="/hex_icon.png"/>
+                <Image Source="hex_icon.png"/>
             </Button>
 
             <!-- Кнопка для Binary представления -->
             <Button Width="50" Height="30" Margin="5,0,0,0" Click="ShowBinaryView_Click">
-                <Image Source="/binary_icon.png"/>
+                <Image Source="binary_icon.png"/>
             </Button>
 
             <!-- Кнопка для вызова окна поиска с новой иконкой -->
             <Button Width="50" Height="30" Margin="10,0,0,0" Click="OpenSearchWindow_Click">
-                <Image Source="/find.png"/>
+                <Image Source="find.png"/>
             </Button>
         </StackPanel>
 
