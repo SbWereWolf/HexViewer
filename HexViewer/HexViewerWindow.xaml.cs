@@ -22,7 +22,7 @@ namespace ProbyteEditClient
         private const string Binary = "Binary";
         private string ViewingMode = Hex;
         private const string NoData = "Нет данных для отображения.";
-        private readonly BinaryDataParser.DataReader Reader;
+        private readonly BinaryDataParser.Reader Reader;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -31,7 +31,7 @@ namespace ProbyteEditClient
             Source = new FileStream(binaryFilePath, FileMode.Open);
             FileLength = Source.Length;
 
-            Reader = new BinaryDataParser.DataReader(Source, FileLength);
+            Reader = new BinaryDataParser.Reader(Source, FileLength);
 
             FileBytes = new byte[NumberOfBytes];
             BytesRead = Source.Read(FileBytes, 0, NumberOfBytes);

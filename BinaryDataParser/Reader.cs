@@ -3,12 +3,12 @@ using System.IO;
 
 namespace BinaryDataParser
 {
-    public class DataReader
+    public class Reader
     {
         private readonly FileStream? Source;
         private readonly long FileLength = 0;
 
-        public DataReader(FileStream source, long length)
+        public Reader(FileStream source, long length)
         {
             Source = source;
             FileLength = length;
