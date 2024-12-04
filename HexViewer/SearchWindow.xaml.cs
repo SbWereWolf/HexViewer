@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Linq;
 
-namespace ProbyteEdit_Client
+namespace ProbyteEditClient
 {
     public partial class SearchWindow : Window
     {

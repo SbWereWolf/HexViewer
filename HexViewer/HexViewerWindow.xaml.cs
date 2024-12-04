@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ProbyteEdit_Client
+namespace ProbyteEditClient
 {
     public partial class HexViewerWindow : Window
     {

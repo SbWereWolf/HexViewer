@@ -1,4 +1,4 @@
-﻿using ProbyteEdit_Client;
+﻿using ProbyteEditClient;
 using System;
 using System.IO;
 using System.Windows;
