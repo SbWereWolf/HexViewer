@@ -24,5 +24,10 @@ namespace HexViewer
         {
             InitializeComponent();
         }
+
+        private void ChooseBinaryFile_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

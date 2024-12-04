@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Choose binary file" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="ChooseBinaryFile" Content="Choose binary file" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="ChooseBinaryFile_Click"/>
 
     </Grid>
 </Window>
