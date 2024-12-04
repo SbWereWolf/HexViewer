@@ -153,7 +153,7 @@ namespace ProbyteEditClient
         private int FindBinaryInTextBox(string binaryString, int startIndex)
         {
             // Поиск точного соответствия бинарной строки в отображаемом тексте
-            string text = parentWindow.HexTextBox.Text;
+            string text = parentWindow.DataTextBox.Text;
             return text.IndexOf(binaryString, startIndex, StringComparison.Ordinal);
         }
 
@@ -161,7 +161,7 @@ namespace ProbyteEditClient
         private int FindDecimalInTextBox(string decimalString, int startIndex)
         {
             // Поиск точного соответствия трехзначному числу в отображаемом тексте
-            string text = parentWindow.HexTextBox.Text;
+            string text = parentWindow.DataTextBox.Text;
             return text.IndexOf(decimalString, startIndex, StringComparison.Ordinal);
         }
 
