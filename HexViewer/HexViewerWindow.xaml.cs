@@ -11,7 +11,7 @@ namespace ProbyteEditClient
     public partial class HexViewerWindow : Window
     {
         private static readonly int BytesPerLine = 16;// Количество байтов на строку
-        private static readonly int NumberOfLines = 16*2;
+        private static readonly int NumberOfLines = 16 * 2;
         private static readonly int NumberOfBytes = BytesPerLine * NumberOfLines;
         private readonly byte[]? FileBytes;
         private int BytesRead;
@@ -22,6 +22,7 @@ namespace ProbyteEditClient
         private const string Binary = "Binary";
         private string ViewingMode = Hex;
         private const string NoData = "Нет данных для отображения.";
+        private readonly BinaryDataParser.DataReader Reader;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -29,6 +30,8 @@ namespace ProbyteEditClient
 
             Source = new FileStream(binaryFilePath, FileMode.Open);
             FileLength = Source.Length;
+
+            Reader = new BinaryDataParser.DataReader(Source, FileLength);
 
             FileBytes = new byte[NumberOfBytes];
             BytesRead = Source.Read(FileBytes, 0, NumberOfBytes);
@@ -326,72 +329,61 @@ namespace ProbyteEditClient
 
         private void Backward_Click(object sender, RoutedEventArgs e)
         {
-            if (Source == null)
-            {
-                return;
-            }
-            if (Source.Position == NumberOfBytes)
-            {
-                MessageBox.Show("Достигнуто начало файла");
-                return;
-            }
             if (FileBytes != null)
             {
-                var mayBackward = Source.Position >= NumberOfBytes * 2;
-                long position = 0;
-                if (mayBackward)
+                var allow = Reader.MayBackward(FileBytes.Length);
+                if (!allow)
                 {
-                    position = -2 * NumberOfBytes;
-                }
-                if (!mayBackward)
-                {
-                    position = -1 * Source.Position;
+                    MessageBox.Show("Достигнуто начало файла");
                 }
 
-                Source.Seek(position, SeekOrigin.Current);
-                BytesRead = Source.Read(FileBytes);
-
-                switch (ViewingMode)
+                if (allow)
                 {
-                    case Hex:
-                        UpdateHexView(FileBytes, BytesRead);
-                        break;
-                    case Decimal:
-                        UpdateDecimalView(FileBytes, BytesRead);
-                        break;
-                    case Binary:
-                        UpdateBinaryView(FileBytes, BytesRead);
-                        break;
+                    BytesRead = Reader.Backward(FileBytes);
+
+                    switch (ViewingMode)
+                    {
+                        case Hex:
+                            UpdateHexView(FileBytes, BytesRead);
+                            break;
+                        case Decimal:
+                            UpdateDecimalView(FileBytes, BytesRead);
+                            break;
+                        case Binary:
+                            UpdateBinaryView(FileBytes, BytesRead);
+                            break;
+                    }
                 }
             }
         }
 
         private void Forward_Click(object sender, RoutedEventArgs e)
         {
-            if (Source == null)
-            {
-                return;
-            }
-            if (Source.Position == FileLength)
-            {
-                MessageBox.Show("Достигнут конец файла");
-                return;
-            }
+
             if (FileBytes != null)
             {
-                BytesRead = Source.Read(FileBytes);
-
-                switch (ViewingMode)
+                var allow = Reader.MayForward(FileLength);
+                if (!allow)
                 {
-                    case Hex:
-                        UpdateHexView(FileBytes, BytesRead);
-                        break;
-                    case Decimal:
-                        UpdateDecimalView(FileBytes, BytesRead);
-                        break;
-                    case Binary:
-                        UpdateBinaryView(FileBytes, BytesRead);
-                        break;
+                    MessageBox.Show("Достигнут конец файла");
+                }
+
+                if (allow)
+                {
+                    BytesRead = Reader.Forward(FileBytes);
+
+                    switch (ViewingMode)
+                    {
+                        case Hex:
+                            UpdateHexView(FileBytes, BytesRead);
+                            break;
+                        case Decimal:
+                            UpdateDecimalView(FileBytes, BytesRead);
+                            break;
+                        case Binary:
+                            UpdateBinaryView(FileBytes, BytesRead);
+                            break;
+                    }
                 }
             }
         }

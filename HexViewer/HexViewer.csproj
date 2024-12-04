@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BinaryDataParser\BinaryDataParser.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="backward.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
