@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -84,7 +83,7 @@ namespace ProbyteEdit_Client
                     // Байтовая часть в HEX формате
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < fileBytes.Length)
+                        if (i + j < BytesRead)
                         {
                             hexBuilder.AppendFormat("{0:X2} ", fileBytes[i + j]);
                         }
@@ -98,7 +97,7 @@ namespace ProbyteEdit_Client
                     // ASCII представление
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < fileBytes.Length)
+                        if (i + j < BytesRead)
                         {
                             byte b = fileBytes[i + j];
                             char c = b >= 32 && b <= 126 ? (char)b : '•';
@@ -139,7 +138,7 @@ namespace ProbyteEdit_Client
                     // Байтовая часть в десятичном представлении
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < fileBytes.Length)
+                        if (i + j < BytesRead)
                         {
                             decimalBuilder.AppendFormat("{0:D3} ", fileBytes[i + j]);
                         }
@@ -153,7 +152,7 @@ namespace ProbyteEdit_Client
                     // ASCII представление
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < fileBytes.Length)
+                        if (i + j < BytesRead)
                         {
                             byte b = fileBytes[i + j];
                             char c = b >= 32 && b <= 126 ? (char)b : '•';
@@ -196,7 +195,7 @@ namespace ProbyteEdit_Client
                     // Байтовая часть в бинарном представлении
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < fileBytes.Length)
+                        if (i + j < BytesRead)
                         {
                             binaryBuilder.AppendFormat("{0} ", Convert.ToString(fileBytes[i + j], 2).PadLeft(8, '0'));
                         }
@@ -211,7 +210,7 @@ namespace ProbyteEdit_Client
                     // ASCII представление
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < fileBytes.Length)
+                        if (i + j < BytesRead)
                         {
                             byte b = fileBytes[i + j];
                             char c = b >= 32 && b <= 126 ? (char)b : '•';
