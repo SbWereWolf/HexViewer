@@ -16,14 +16,14 @@ namespace BinaryDataParser
 
         public bool MayBackward(long dataFrameSize)
         {
-            var allow = !(Source == null && Source?.Position == dataFrameSize);
+            var allow = !(Source != null && Source?.Position == dataFrameSize);
 
             return allow;
         }
 
         public bool MayForward(long dataFrameSize)
         {
-            var allow = !(Source == null && Source?.Position == FileLength);
+            var allow = !(Source != null && Source?.Position == FileLength);
 
             return allow;
         }
