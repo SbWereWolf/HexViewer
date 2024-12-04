@@ -8,21 +8,21 @@ namespace BinaryDataParser
 {
     internal class Settings
     {
-        private const string HexFormat = "{0:00} ";
+        private const int HexFormat = 2;
         private const string HexPlaceholder = "   ";
         private const int HexBase = 16;
-        private const string DecimalFormat = "{0:000} ";
+        private const int DecimalFormat = 3;
         private const string DecimalPlaceholder = "    ";
         private const int DecimalBase = 10;
-        private const string BinaryFormat = "{0:00000000} ";
+        private const int BinaryFormat = 8;
         private const string BinaryPlaceholder = "         ";
         private const int BinaryBase = 2;
 
         public readonly int Basis;
-        public readonly string Format;
+        public readonly int Format;
         public readonly string Placeholder;
 
-        private Settings(int basis, string format, string placeholder)
+        private Settings(int basis, int format, string placeholder)
         {
             Basis = basis;
             Format = format;

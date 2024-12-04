@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BinaryDataParser
 {
-    internal class TemplateEngine
+    public class TemplateEngine
     {
         private readonly int BytesPerLine = 16;// Количество байтов на строку
         private Mode ViewingMode = Mode.Hex;
@@ -118,8 +118,10 @@ namespace BinaryDataParser
                         var isValidByte = byteIndex < bytesRead;
                         if (isValidByte)
                         {
-                            var digit = Convert.ToString(fileBytes[i + j], settings.Basis);
-                            word = string.Format(settings.Format, digit);
+                            word = Convert
+                                .ToString(fileBytes[i + j], settings.Basis)
+                                .ToUpper()
+                                .PadLeft(settings.Format,'0') + " ";
                         }
                         if (!isValidByte)
                         {
