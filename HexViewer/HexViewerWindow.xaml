@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ProbyteEdit_Client.HexViewerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="HEX Viewer" Height="600" Width="1200">
+        Title="HEX Viewer" Height="600" Width="1200" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -20,28 +20,34 @@
         <!-- Панель для переключения форматов и поиска -->
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0" Grid.ColumnSpan="5">
             <!-- Кнопка для Decimal представления -->
-            <Button Width="50" Height="30" Margin="5,0,0,0" Click="ShowDecimalView_Click">
+            <Button Width="50" Height="30" Margin="5,0,5,0" Click="ShowDecimalView_Click">
                 <Image Source="decimal_icon.png"/>
             </Button>
 
             <!-- Кнопка для Hex представления -->
-            <Button Width="50" Height="30" Margin="5,0,0,0" Click="ShowHexView_Click">
+            <Button Width="50" Height="30" Margin="5,0,5,0" Click="ShowHexView_Click">
                 <Image Source="hex_icon.png"/>
             </Button>
 
             <!-- Кнопка для Binary представления -->
-            <Button Width="50" Height="30" Margin="5,0,0,0" Click="ShowBinaryView_Click">
+            <Button Width="50" Height="30" Margin="5,0,5,0" Click="ShowBinaryView_Click">
                 <Image Source="binary_icon.png"/>
             </Button>
 
             <!-- Кнопка для вызова окна поиска с новой иконкой -->
-            <Button Width="50" Height="30" Margin="10,0,0,0" Click="OpenSearchWindow_Click">
+            <Button Width="50" Height="30" Margin="5,0,5,0" Click="OpenSearchWindow_Click">
                 <Image Source="find.png"/>
+            </Button>
+            <Button x:Name="Backward" Width="50" Height="30" Margin="5,0,5,0" Click="Backward_Click">
+                <Image Source="backward.png"/>
+            </Button>
+            <Button x:Name="Forward" Width="50" Height="30" Margin="5,0,5,0" Click="Forward_Click">
+                <Image Source="forward.png"/>
             </Button>
         </StackPanel>
 
         <!-- Область для отображения адресов -->
-        <ScrollViewer x:Name="AddressScrollViewer" Grid.Row="1" Grid.Column="0" Margin="5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="AddressScrollViewer" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
             <TextBox x:Name="AddressTextBox"
                      FontFamily="Consolas"
                      FontSize="12"
@@ -55,7 +61,7 @@
         <Grid Grid.Row="1" Grid.Column="1"/>
 
         <!-- Область для отображения HEX данных -->
-        <ScrollViewer x:Name="HexScrollViewer" Grid.Row="1" Grid.Column="2" Margin="5" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+        <ScrollViewer x:Name="HexScrollViewer" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Grid.ColumnSpan="2">
             <TextBox x:Name="HexTextBox"
                      FontFamily="Consolas"
                      FontSize="12"
@@ -69,7 +75,7 @@
         <Grid Grid.Row="1" Grid.Column="3"/>
 
         <!-- Область для отображения текстового (ASCII) представления -->
-        <ScrollViewer x:Name="AsciiScrollViewer" Grid.Row="1" Grid.Column="4" Margin="5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="AsciiScrollViewer" Grid.Row="1" Grid.Column="4" Margin="5,5,5,5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
             <TextBox x:Name="AsciiTextBox"
                      FontFamily="Consolas"
                      FontSize="12"

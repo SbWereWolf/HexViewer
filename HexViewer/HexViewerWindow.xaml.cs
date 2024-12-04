@@ -1,5 +1,8 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,67 +11,106 @@ namespace ProbyteEdit_Client
 {
     public partial class HexViewerWindow : Window
     {
-        private readonly byte[] fileBytes;
-        private readonly int bytesPerLine = 16; // Количество байтов на строку        
+        private static readonly int BytesPerLine = 16;// Количество байтов на строку
+        private static readonly int NumberOfLines = 16*2;
+        private static readonly int NumberOfBytes = BytesPerLine * NumberOfLines;
+        private readonly byte[]? FileBytes;
+        private int BytesRead;
+        private readonly FileStream? Source;
+        private readonly long FileLength;
+        private const string Hex = "Hex";
+        private const string Decimal = "Decimal";
+        private const string Binary = "Binary";
+        private string ViewingMode = Hex;
+        private const string NoData = "Нет данных для отображения.";
 
-        public HexViewerWindow(byte[] fileBytes)
+        public HexViewerWindow(string binaryFilePath)
         {
             InitializeComponent();
-            this.fileBytes = fileBytes;
 
-            // Вызов метода для отображения данных в HEX представлении
-            UpdateHexView();
+            Source = new FileStream(binaryFilePath, FileMode.Open);
+            FileLength = Source.Length;
+
+            FileBytes = new byte[NumberOfBytes];
+            BytesRead = Source.Read(FileBytes, 0, NumberOfBytes);
+
+            if (BytesRead == 0 || FileLength == 0)
+            {
+                AddressTextBox.Text = NoData;
+                HexTextBox.Text = NoData;
+                AsciiTextBox.Text = NoData;
+
+                HexTextBox.Text = "Файл пустой, в файле нет данных";
+            }
+
+
+            if (BytesRead > 0)
+            {
+                switch (ViewingMode)
+                {
+                    case Hex:
+                        UpdateHexView(FileBytes, BytesRead);
+                        break;
+                    case Decimal:
+                        UpdateDecimalView(FileBytes, BytesRead);
+                        break;
+                    case Binary:
+                        UpdateBinaryView(FileBytes, BytesRead);
+                        break;
+                }
+            }
         }
 
         // Метод для обновления HEX представления
-        private void UpdateHexView()
+        private void UpdateHexView(byte[]? fileBytes, int bytesRead)
         {
-            if (fileBytes == null || fileBytes.Length == 0)
+
+            if (bytesRead == 0 || fileBytes == null || Source == null)
             {
-                AddressTextBox.Text = "Нет данных для отображения.";
-                HexTextBox.Text = "Нет данных для отображения.";
-                AsciiTextBox.Text = "Нет данных для отображения.";
                 return;
             }
 
-            StringBuilder addressBuilder = new StringBuilder();
-            StringBuilder hexBuilder = new StringBuilder();
-            StringBuilder asciiBuilder = new StringBuilder();
+            StringBuilder addressBuilder = new();
+            StringBuilder hexBuilder = new();
+            StringBuilder asciiBuilder = new();
 
-            for (int i = 0; i < fileBytes.Length; i += bytesPerLine)
+            for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
             {
                 // Адрес строки
-                addressBuilder.AppendFormat("{0:X8}\n", i);
+                addressBuilder.AppendFormat("{0:X8}\n", i + Source.Position - BytesRead);
 
-                // Байтовая часть в HEX формате
-                for (int j = 0; j < bytesPerLine; j++)
+                if (i < bytesRead)
                 {
-                    if (i + j < fileBytes.Length)
+                    // Байтовая часть в HEX формате
+                    for (int j = 0; j < BytesPerLine; j++)
                     {
-                        hexBuilder.AppendFormat("{0:X2} ", fileBytes[i + j]);
+                        if (i + j < fileBytes.Length)
+                        {
+                            hexBuilder.AppendFormat("{0:X2} ", fileBytes[i + j]);
+                        }
+                        else
+                        {
+                            hexBuilder.Append("  ");
+                        }
                     }
-                    else
-                    {
-                        hexBuilder.Append("   ");
-                    }
-                }
-                hexBuilder.AppendLine();
+                    hexBuilder.AppendLine();
 
-                // ASCII представление
-                for (int j = 0; j < bytesPerLine; j++)
-                {
-                    if (i + j < fileBytes.Length)
+                    // ASCII представление
+                    for (int j = 0; j < BytesPerLine; j++)
                     {
-                        byte b = fileBytes[i + j];
-                        char c = b >= 32 && b <= 126 ? (char)b : '.';
-                        asciiBuilder.Append(c);
+                        if (i + j < fileBytes.Length)
+                        {
+                            byte b = fileBytes[i + j];
+                            char c = b >= 32 && b <= 126 ? (char)b : '•';
+                            asciiBuilder.Append(c);
+                        }
+                        else
+                        {
+                            asciiBuilder.Append(' ');
+                        }
                     }
-                    else
-                    {
-                        asciiBuilder.Append(' ');
-                    }
+                    asciiBuilder.AppendLine();
                 }
-                asciiBuilder.AppendLine();
             }
 
             // Устанавливаем текст в соответствующие TextBox
@@ -76,123 +118,137 @@ namespace ProbyteEdit_Client
             HexTextBox.Text = hexBuilder.ToString();
             AsciiTextBox.Text = asciiBuilder.ToString();
         }
-        private void UpdateDecimalView()
+        private void UpdateDecimalView(byte[]? fileBytes, int bytesRead)
         {
-            if (fileBytes == null || fileBytes.Length == 0)
+            if (bytesRead == 0 || fileBytes == null || Source == null)
             {
-                HexTextBox.Text = "Нет данных для отображения.";
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder addressBuilder = new();
+            StringBuilder decimalBuilder = new();
+            StringBuilder asciiBuilder = new();
 
-            for (int i = 0; i < fileBytes.Length; i += bytesPerLine)
+            for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
             {
                 // Адрес строки
-                sb.AppendFormat("{0:X8}  || ", i);
+                addressBuilder.AppendFormat("{0:X8}\n", i + Source.Position - BytesRead);
 
-                // Байтовая часть в десятичном представлении
-                for (int j = 0; j < bytesPerLine; j++)
+                if (i < bytesRead)
                 {
-                    if (i + j < fileBytes.Length)
+                    // Байтовая часть в десятичном представлении
+                    for (int j = 0; j < BytesPerLine; j++)
                     {
-                        sb.AppendFormat("{0:D3} ", fileBytes[i + j]);
+                        if (i + j < fileBytes.Length)
+                        {
+                            decimalBuilder.AppendFormat("{0:D3} ", fileBytes[i + j]);
+                        }
+                        else
+                        {
+                            decimalBuilder.Append("   ");
+                        }
                     }
-                    else
+                    decimalBuilder.AppendLine();
+
+                    // ASCII представление
+                    for (int j = 0; j < BytesPerLine; j++)
                     {
-                        sb.Append("    ");
+                        if (i + j < fileBytes.Length)
+                        {
+                            byte b = fileBytes[i + j];
+                            char c = b >= 32 && b <= 126 ? (char)b : '•';
+                            asciiBuilder.Append(c);
+                        }
+                        else
+                        {
+                            asciiBuilder.Append(' ');
+                        }
                     }
+
+                    asciiBuilder.AppendLine();
                 }
-
-                // Разделитель между Decimal и ASCII
-                sb.Append("|| ");
-
-                // ASCII представление
-                for (int j = 0; j < bytesPerLine; j++)
-                {
-                    if (i + j < fileBytes.Length)
-                    {
-                        byte b = fileBytes[i + j];
-                        char c = b >= 32 && b <= 126 ? (char)b : '.';
-                        sb.Append(c);
-                    }
-                    else
-                    {
-                        sb.Append(' ');
-                    }
-                }
-
-                sb.AppendLine();
             }
 
             // Устанавливаем текст в TextBox
-            HexTextBox.Text = sb.ToString();
+            AddressTextBox.Text = addressBuilder.ToString();
+            HexTextBox.Text = decimalBuilder.ToString();
+            AsciiTextBox.Text = asciiBuilder.ToString();
+
         }
-        private void UpdateBinaryView()
+        private void UpdateBinaryView(byte[]? fileBytes, int bytesRead)
         {
-            if (fileBytes == null || fileBytes.Length == 0)
+            if (bytesRead == 0 || fileBytes == null || Source == null)
             {
-                HexTextBox.Text = "Нет данных для отображения.";
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder addressBuilder = new();
+            StringBuilder binaryBuilder = new();
+            StringBuilder asciiBuilder = new();
 
-            for (int i = 0; i < fileBytes.Length; i += bytesPerLine)
+            for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
             {
                 // Адрес строки
-                sb.AppendFormat("{0:X8}  || ", i);
+                addressBuilder.AppendFormat("{0:X8}\n", i + Source.Position - BytesRead);
 
-                // Байтовая часть в бинарном представлении
-                for (int j = 0; j < bytesPerLine; j++)
+                if (i < bytesRead)
                 {
-                    if (i + j < fileBytes.Length)
+                    // Байтовая часть в бинарном представлении
+                    for (int j = 0; j < BytesPerLine; j++)
                     {
-                        sb.AppendFormat("{0} ", Convert.ToString(fileBytes[i + j], 2).PadLeft(8, '0'));
+                        if (i + j < fileBytes.Length)
+                        {
+                            binaryBuilder.AppendFormat("{0} ", Convert.ToString(fileBytes[i + j], 2).PadLeft(8, '0'));
+                        }
+                        else
+                        {
+                            binaryBuilder.Append(new string(' ', 9));
+                        }
                     }
-                    else
+
+                    binaryBuilder.AppendLine();
+
+                    // ASCII представление
+                    for (int j = 0; j < BytesPerLine; j++)
                     {
-                        sb.Append(new string(' ', 9));
+                        if (i + j < fileBytes.Length)
+                        {
+                            byte b = fileBytes[i + j];
+                            char c = b >= 32 && b <= 126 ? (char)b : '•';
+                            asciiBuilder.Append(c);
+                        }
+                        else
+                        {
+                            asciiBuilder.Append(' ');
+                        }
                     }
+
+                    asciiBuilder.AppendLine();
                 }
 
-                // Разделитель между Binary и ASCII
-                sb.Append("|| ");
-
-                // ASCII представление
-                for (int j = 0; j < bytesPerLine; j++)
-                {
-                    if (i + j < fileBytes.Length)
-                    {
-                        byte b = fileBytes[i + j];
-                        char c = b >= 32 && b <= 126 ? (char)b : '.';
-                        sb.Append(c);
-                    }
-                    else
-                    {
-                        sb.Append(' ');
-                    }
-                }
-
-                sb.AppendLine();
             }
 
             // Устанавливаем текст в TextBox
-            HexTextBox.Text = sb.ToString();
+            AddressTextBox.Text = addressBuilder.ToString();
+            HexTextBox.Text = binaryBuilder.ToString();
+            AsciiTextBox.Text = asciiBuilder.ToString();
         }
         private void ShowHexView_Click(object sender, RoutedEventArgs e)
         {
-            UpdateHexView();
+            ViewingMode = Hex;
+            UpdateHexView(FileBytes, BytesRead);
         }
 
         private void ShowDecimalView_Click(object sender, RoutedEventArgs e)
         {
-            UpdateDecimalView();
+            ViewingMode = Decimal;
+            UpdateDecimalView(FileBytes, BytesRead);
         }
 
         private void ShowBinaryView_Click(object sender, RoutedEventArgs e)
         {
-            UpdateBinaryView();
+            ViewingMode = Binary;
+            UpdateBinaryView(FileBytes, BytesRead);
         }
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -262,6 +318,83 @@ namespace ProbyteEdit_Client
                 Owner = this // Устанавливаем родительское окно
             };
             searchWindow.Show(); // Открываем окно без блокировки основного окна
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Source?.Dispose();
+        }
+
+        private void Backward_Click(object sender, RoutedEventArgs e)
+        {
+            if (Source == null)
+            {
+                return;
+            }
+            if (Source.Position == NumberOfBytes)
+            {
+                MessageBox.Show("Достигнуто начало файла");
+                return;
+            }
+            if (FileBytes != null)
+            {
+                var mayBackward = Source.Position >= NumberOfBytes * 2;
+                long position = 0;
+                if (mayBackward)
+                {
+                    position = -2 * NumberOfBytes;
+                }
+                if (!mayBackward)
+                {
+                    position = -1 * Source.Position;
+                }
+
+                Source.Seek(position, SeekOrigin.Current);
+                BytesRead = Source.Read(FileBytes);
+
+                switch (ViewingMode)
+                {
+                    case Hex:
+                        UpdateHexView(FileBytes, BytesRead);
+                        break;
+                    case Decimal:
+                        UpdateDecimalView(FileBytes, BytesRead);
+                        break;
+                    case Binary:
+                        UpdateBinaryView(FileBytes, BytesRead);
+                        break;
+                }
+            }
+        }
+
+        private void Forward_Click(object sender, RoutedEventArgs e)
+        {
+            if (Source == null)
+            {
+                return;
+            }
+            if (Source.Position == FileLength)
+            {
+                MessageBox.Show("Достигнут конец файла");
+                return;
+            }
+            if (FileBytes != null)
+            {
+                BytesRead = Source.Read(FileBytes);
+
+                switch (ViewingMode)
+                {
+                    case Hex:
+                        UpdateHexView(FileBytes, BytesRead);
+                        break;
+                    case Decimal:
+                        UpdateDecimalView(FileBytes, BytesRead);
+                        break;
+                    case Binary:
+                        UpdateBinaryView(FileBytes, BytesRead);
+                        break;
+                }
+            }
         }
     }
 }

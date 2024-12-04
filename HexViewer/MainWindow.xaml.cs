@@ -24,15 +24,12 @@ namespace HexViewer
                 Multiselect = false
             };
 
-            var bytes = Array.Empty<byte>();
             if (openFileDialog.ShowDialog() == true)
             {
-                bytes = File.ReadAllBytes(openFileDialog.FileName);
+                var viewer = new HexViewerWindow(openFileDialog.FileName);
+                viewer.Show();
             }
 
-
-            var viewer = new HexViewerWindow(bytes);
-            viewer.Show();
         }
     }
 }
