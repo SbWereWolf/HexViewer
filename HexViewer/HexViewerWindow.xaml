@@ -69,7 +69,7 @@
                      IsReadOnly="True"
                      Background="White"
                      TextWrapping="NoWrap"
-                     BorderThickness="0" />
+                     BorderThickness="0" MouseWheel="DataTextBox_MouseWheel" />
         </ScrollViewer>
 
         <!-- Область для отображения текстового (ASCII) представления -->

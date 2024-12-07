@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryDataParser", "BinaryDataParser\BinaryDataParser.csproj", "{91A91AA9-4780-4738-BFB9-CBB36A885C8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryDataParser", "BinaryDataParser\BinaryDataParser.csproj", "{91A91AA9-4780-4738-BFB9-CBB36A885C8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

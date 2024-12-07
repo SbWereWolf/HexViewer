@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace ProbyteEditClient
 {
@@ -20,6 +18,7 @@ namespace ProbyteEditClient
         private const string NoData = "Нет данных для отображения.";
         private readonly BinaryDataParser.Reader Reader;
         private readonly BinaryDataParser.TemplateEngine ViewTemplate;
+        private readonly BinaryDataParser.FilePosition Position;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -42,9 +41,9 @@ namespace ProbyteEditClient
             DataScrollBar.Maximum = FileLength;
             DataScrollBar.Minimum = 0;
             DataScrollBar.Value = 0;
-            DataScrollBar.SmallChange = NumberOfBytes;
+            DataScrollBar.SmallChange = BytesPerLine;
             DataScrollBar.LargeChange = NumberOfBytes;
-            DataScrollBar.ViewportSize=NumberOfBytes;
+            DataScrollBar.ViewportSize = NumberOfBytes;
 
             /* init reader and template */
             Reader = new BinaryDataParser.Reader(Source, FileLength);
@@ -52,6 +51,7 @@ namespace ProbyteEditClient
                 BytesPerLine,
                 BinaryDataParser.TemplateEngine.Mode.Hex
                 );
+            Position = new BinaryDataParser.FilePosition(BytesPerLine);
 
             /* initial read forward */
             FileBytes = new byte[NumberOfBytes];
@@ -79,25 +79,6 @@ namespace ProbyteEditClient
         {
             ViewTemplate.AsBinary();
             RenderDisplay();
-        }
-
-        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            if (sender == AddressScrollViewer)
-            {
-                HexScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-                AsciiScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-            }
-            else if (sender == HexScrollViewer)
-            {
-                AddressScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-                AsciiScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-            }
-            else if (sender == AsciiScrollViewer)
-            {
-                AddressScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-                HexScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-            }
         }
 
         // Метод для подсветки всех найденных значений
@@ -203,10 +184,40 @@ namespace ProbyteEditClient
 
             }
         }
+        private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var newPosition = (long)DataScrollBar.Value;
+
+            var moveBackward = e.Delta > 0;
+            if (moveBackward)
+            {
+                newPosition -= BytesPerLine;
+                newPosition = Position.AlignBackward(newPosition);
+            }
+            if (!moveBackward)
+            {
+                newPosition += BytesPerLine;
+                newPosition = Position.AlignForward(newPosition);
+            }
+
+            BytesRead = Reader.ReadAt(newPosition, FileBytes);
+            RenderBytes();
+
+            PositionTextBlock.Text = Reader.Position.ToString();
+        }
 
         private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var newPosition = (long)DataScrollBar.Value;
+            var moveForward = e.OldValue > e.NewValue;
+            if (moveForward)
+            {
+                newPosition = Position.AlignForward(newPosition);
+            }
+            if (!moveForward)
+            {
+                newPosition = Position.AlignBackward(newPosition);
+            }
 
             BytesRead = Reader.ReadAt(newPosition, FileBytes);
             RenderBytes();
