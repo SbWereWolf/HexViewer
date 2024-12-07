@@ -6,17 +6,18 @@ namespace BinaryDataParser
     public class TemplateEngine
     {
         private readonly int BytesPerLine = 16;// Количество байтов на строку
-        private Mode ViewingMode = Mode.Hex;
-        private const string NoData = "Нет данных для отображения.";
         private const char WrongAsciiSymbol = '•';
         private const char AsciiSymbolPlaceholder = ' ';
         private const string AddressFormat = "{0:X8}";
-        private readonly StringBuilder Address = new();
-        private readonly StringBuilder Display = new();
-        private readonly StringBuilder Ascii = new();
+
+        private Mode ViewingMode = Mode.Hex;
         private readonly Settings Hex;
         private readonly Settings Dec;
         private readonly Settings Bin;
+
+        private readonly StringBuilder Address = new();
+        private readonly StringBuilder Display = new();
+        private readonly StringBuilder Ascii = new();
 
         public enum Mode
         {
