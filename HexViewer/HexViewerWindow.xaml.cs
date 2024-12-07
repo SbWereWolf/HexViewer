@@ -25,6 +25,7 @@ namespace ProbyteEditClient
         {
             InitializeComponent();
 
+            /* init file stream */
             Source = new FileStream(binaryFilePath, FileMode.Open);
             FileLength = Source.Length;
 
@@ -37,12 +38,21 @@ namespace ProbyteEditClient
                 DataTextBox.Text = "Файл пустой, в файле нет данных";
             }
 
+            /* init position indicator */
+            DataScrollBar.Maximum = FileLength;
+            DataScrollBar.Minimum = 0;
+            DataScrollBar.Value = 0;
+            DataScrollBar.SmallChange = NumberOfBytes;
+            DataScrollBar.LargeChange = NumberOfBytes;
+
+            /* init reader and template */
             Reader = new BinaryDataParser.Reader(Source, FileLength);
             Template = new BinaryDataParser.TemplateEngine(
                 BytesPerLine,
                 BinaryDataParser.TemplateEngine.Mode.Hex
                 );
 
+            /* initial read forward */
             FileBytes = new byte[NumberOfBytes];
             BytesRead = Reader.Forward(FileBytes);
             if (BytesRead > 0)
@@ -208,6 +218,13 @@ namespace ProbyteEditClient
 
                 }
             }
+        }
+
+        private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var newPosition = (int)DataScrollBar.Value;
+            PositionTextBlock.Text = newPosition.ToString();
+
         }
     }
 }
