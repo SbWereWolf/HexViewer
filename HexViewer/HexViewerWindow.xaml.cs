@@ -18,7 +18,7 @@ namespace ProbyteEditClient
         private const string NoData = "Нет данных для отображения.";
         private readonly BinaryDataParser.Reader Reader;
         private readonly BinaryDataParser.TemplateEngine ViewTemplate;
-        private readonly BinaryDataParser.FilePosition Position;
+        private readonly BinaryDataParser.ByteAddress Position;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -51,7 +51,7 @@ namespace ProbyteEditClient
                 BytesPerLine,
                 BinaryDataParser.TemplateEngine.Mode.Hex
                 );
-            Position = new BinaryDataParser.FilePosition(BytesPerLine);
+            Position = new BinaryDataParser.ByteAddress(BytesPerLine);
 
             /* initial read forward */
             FileBytes = new byte[NumberOfBytes];

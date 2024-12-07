@@ -2,11 +2,11 @@
 
 namespace BinaryDataParser
 {
-    public class FilePosition
+    public class ByteAddress
     {
         public readonly int Offset;
 
-        public FilePosition(int offset)
+        public ByteAddress(int offset)
         {
             Offset = offset;
         }
