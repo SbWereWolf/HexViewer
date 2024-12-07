@@ -13,9 +13,9 @@ namespace ProbyteEditClient
         private static readonly int BytesPerLine = 16;// Количество байтов на строку
         private static readonly int NumberOfLines = 16 * 2;
         private static readonly int NumberOfBytes = BytesPerLine * NumberOfLines;
-        private readonly byte[]? FileBytes;
+        private readonly byte[] FileBytes;
         private int BytesRead;
-        private readonly FileStream? Source;
+        private readonly FileStream Source;
         private readonly long FileLength;
         private const string NoData = "Нет данных для отображения.";
         private readonly BinaryDataParser.Reader Reader;
@@ -68,35 +68,26 @@ namespace ProbyteEditClient
         }
         private void ShowHexView_Click(object sender, RoutedEventArgs e)
         {
-            if (FileBytes != null && Source != null)
-            {
-                ViewTemplate.AsHex();
-                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+            ViewTemplate.AsHex();
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
-                DataTextBox.Text = view.Display;
-            }
+            DataTextBox.Text = view.Display;
         }
 
         private void ShowDecimalView_Click(object sender, RoutedEventArgs e)
         {
-            if (FileBytes != null && Source != null)
-            {
-                ViewTemplate.AsDecimal();
-                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+            ViewTemplate.AsDecimal();
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
-                DataTextBox.Text = view.Display;
-            }
+            DataTextBox.Text = view.Display;
         }
 
         private void ShowBinaryView_Click(object sender, RoutedEventArgs e)
         {
-            if (FileBytes != null && Source != null)
-            {
-                ViewTemplate.AsBinary();
-                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+            ViewTemplate.AsBinary();
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
-                DataTextBox.Text = view.Display;
-            }
+            DataTextBox.Text = view.Display;
         }
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -170,56 +161,49 @@ namespace ProbyteEditClient
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Source?.Dispose();
+            Source.Dispose();
         }
 
         private void Backward_Click(object sender, RoutedEventArgs e)
         {
-            if (FileBytes != null && Source != null)
+            var allow = Reader.MayBackward(FileBytes.Length);
+            if (!allow)
             {
-                var allow = Reader.MayBackward(FileBytes.Length);
-                if (!allow)
-                {
-                    MessageBox.Show("Достигнуто начало файла");
-                }
+                MessageBox.Show("Достигнуто начало файла");
+            }
 
-                if (allow)
-                {
-                    BytesRead = Reader.Backward(FileBytes);
-                    DataScrollBar.Value = Reader.Position;
+            if (allow)
+            {
+                BytesRead = Reader.Backward(FileBytes);
+                DataScrollBar.Value = Reader.Position;
 
-                    var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
-                    AddressTextBox.Text = view.Address;
-                    DataTextBox.Text = view.Display;
-                    AsciiTextBox.Text = view.Ascii;
-                }
+                AddressTextBox.Text = view.Address;
+                DataTextBox.Text = view.Display;
+                AsciiTextBox.Text = view.Ascii;
             }
         }
 
         private void Forward_Click(object sender, RoutedEventArgs e)
         {
-
-            if (FileBytes != null && Source != null)
+            var allow = Reader.MayForward();
+            if (!allow)
             {
-                var allow = Reader.MayForward(FileLength);
-                if (!allow)
-                {
-                    MessageBox.Show("Достигнут конец файла");
-                }
+                MessageBox.Show("Достигнут конец файла");
+            }
 
-                if (allow)
-                {
-                    BytesRead = Reader.Forward(FileBytes);
-                    DataScrollBar.Value = Reader.Position;
+            if (allow)
+            {
+                BytesRead = Reader.Forward(FileBytes);
+                DataScrollBar.Value = Reader.Position;
 
-                    var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
-                    AddressTextBox.Text = view.Address;
-                    DataTextBox.Text = view.Display;
-                    AsciiTextBox.Text = view.Ascii;
+                AddressTextBox.Text = view.Address;
+                DataTextBox.Text = view.Display;
+                AsciiTextBox.Text = view.Ascii;
 
-                }
             }
         }
 
