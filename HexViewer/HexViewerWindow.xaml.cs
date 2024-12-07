@@ -19,7 +19,7 @@ namespace ProbyteEditClient
         private readonly long FileLength;
         private const string NoData = "Нет данных для отображения.";
         private readonly BinaryDataParser.Reader Reader;
-        private readonly BinaryDataParser.TemplateEngine Template;
+        private readonly BinaryDataParser.TemplateEngine ViewTemplate;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -47,7 +47,7 @@ namespace ProbyteEditClient
 
             /* init reader and template */
             Reader = new BinaryDataParser.Reader(Source, FileLength);
-            Template = new BinaryDataParser.TemplateEngine(
+            ViewTemplate = new BinaryDataParser.TemplateEngine(
                 BytesPerLine,
                 BinaryDataParser.TemplateEngine.Mode.Hex
                 );
@@ -55,10 +55,11 @@ namespace ProbyteEditClient
             /* initial read forward */
             FileBytes = new byte[NumberOfBytes];
             BytesRead = Reader.Forward(FileBytes);
+            DataScrollBar.Value = Reader.Position;
             if (BytesRead > 0)
             {
-                Template.AsHex();
-                var view = Template.Render(FileBytes, BytesRead, Source.Position);
+                ViewTemplate.AsHex();
+                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
                 AddressTextBox.Text = view.Address;
                 DataTextBox.Text = view.Display;
@@ -69,8 +70,8 @@ namespace ProbyteEditClient
         {
             if (FileBytes != null && Source != null)
             {
-                Template.AsHex();
-                var view = Template.Render(FileBytes, BytesRead, Source.Position);
+                ViewTemplate.AsHex();
+                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
                 DataTextBox.Text = view.Display;
             }
@@ -80,8 +81,8 @@ namespace ProbyteEditClient
         {
             if (FileBytes != null && Source != null)
             {
-                Template.AsDecimal();
-                var view = Template.Render(FileBytes, BytesRead, Source.Position);
+                ViewTemplate.AsDecimal();
+                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
                 DataTextBox.Text = view.Display;
             }
@@ -91,8 +92,8 @@ namespace ProbyteEditClient
         {
             if (FileBytes != null && Source != null)
             {
-                Template.AsBinary();
-                var view = Template.Render(FileBytes, BytesRead, Source.Position);
+                ViewTemplate.AsBinary();
+                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
                 DataTextBox.Text = view.Display;
             }
@@ -185,8 +186,9 @@ namespace ProbyteEditClient
                 if (allow)
                 {
                     BytesRead = Reader.Backward(FileBytes);
+                    DataScrollBar.Value = Reader.Position;
 
-                    var view = Template.Render(FileBytes, BytesRead, Source.Position);
+                    var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
                     AddressTextBox.Text = view.Address;
                     DataTextBox.Text = view.Display;
@@ -209,8 +211,9 @@ namespace ProbyteEditClient
                 if (allow)
                 {
                     BytesRead = Reader.Forward(FileBytes);
+                    DataScrollBar.Value = Reader.Position;
 
-                    var view = Template.Render(FileBytes, BytesRead, Source.Position);
+                    var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
                     AddressTextBox.Text = view.Address;
                     DataTextBox.Text = view.Display;

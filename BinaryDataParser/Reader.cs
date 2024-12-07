@@ -5,8 +5,13 @@ namespace BinaryDataParser
 {
     public class Reader
     {
-        private readonly FileStream? Source;
+        private readonly FileStream Source;
         private readonly long FileLength = 0;
+
+        public long Position
+        {
+            get =>  this.Source.Position;
+        }
 
         public Reader(FileStream source, long length)
         {
