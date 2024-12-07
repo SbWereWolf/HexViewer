@@ -41,12 +41,6 @@
             <Button x:Name="OpenSearchWindow" Width="50" Height="30" Margin="5,0,5,0" Click="OpenSearchWindow_Click">
                 <Image x:Name="SearchImage" Source="find.png"/>
             </Button>
-            <Button x:Name="Backward" Width="50" Height="30" Margin="5,0,5,0" Click="Backward_Click">
-                <Image x:Name="BackwardImage" Source="backward.png"/>
-            </Button>
-            <Button x:Name="Forward" Width="50" Height="30" Margin="5,0,5,0" Click="Forward_Click">
-                <Image x:Name="ForwardImage" Source="forward.png"/>
-            </Button>
             <TextBlock x:Name="PositionTextBlock" TextWrapping="NoWrap" Text="PositionTextBlock"/>
         </StackPanel>
 

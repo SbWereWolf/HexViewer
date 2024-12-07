@@ -153,37 +153,6 @@ namespace ProbyteEditClient
         {
             Source.Dispose();
         }
-
-        private void Backward_Click(object sender, RoutedEventArgs e)
-        {
-            var allow = Reader.MayBackward(FileBytes.Length);
-            if (!allow)
-            {
-                MessageBox.Show("Достигнуто начало файла");
-            }
-
-            if (allow)
-            {
-                BytesRead = Reader.Backward(FileBytes);
-                RenderBytes();
-            }
-        }
-
-        private void Forward_Click(object sender, RoutedEventArgs e)
-        {
-            var allow = Reader.MayForward();
-            if (!allow)
-            {
-                MessageBox.Show("Достигнут конец файла");
-            }
-
-            if (allow)
-            {
-                BytesRead = Reader.Forward(FileBytes);
-                RenderBytes();
-
-            }
-        }
         private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             var newPosition = (long)DataScrollBar.Value;
