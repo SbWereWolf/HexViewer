@@ -6,7 +6,6 @@ namespace BinaryDataParser
     public class Reader
     {
         private readonly FileStream Source;
-        private readonly long FileLength = 0;
 
         public long Position
         {
@@ -16,21 +15,6 @@ namespace BinaryDataParser
         public Reader(FileStream source, long length)
         {
             Source = source;
-            FileLength = length;
-        }
-
-        public bool MayBackward(long dataFrameSize)
-        {
-            var allow = !(Source.Position == dataFrameSize);
-
-            return allow;
-        }
-
-        public bool MayForward()
-        {
-            var allow = !(Source.Position == FileLength);
-
-            return allow;
         }
 
         public int ReadAt(long position, byte[] dataFrame)
@@ -47,32 +31,5 @@ namespace BinaryDataParser
 
             return bytesRead;
         }
-
-        public int Backward(byte[] dataFrame)
-        {
-            var mayBackward = Source.Position >= dataFrame.Length * 2;
-            long position = 0;
-            if (mayBackward)
-            {
-                position = -2 * dataFrame.LongLength;
-            }
-            if (!mayBackward)
-            {
-                position = -1 * Source.Position;
-            }
-
-            Source.Seek(position, SeekOrigin.Current);
-            int bytesRead = Source.Read(dataFrame);
-
-            return bytesRead;
-        }
-
-        public int Forward(byte[] dataFrame)
-        {
-            int bytesRead = Source.Read(dataFrame);
-
-            return bytesRead;
-        }
-
     }
 }

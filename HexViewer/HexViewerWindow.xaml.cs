@@ -55,13 +55,7 @@ namespace ProbyteEditClient
 
             /* initial read forward */
             FileBytes = new byte[NumberOfBytes];
-            BytesRead = Reader.Forward(FileBytes);
-            DataScrollBar.Value = Reader.Position;
-            if (BytesRead > 0)
-            {
-                ViewTemplate.AsHex();
-                RenderBytes();
-            }
+            DataScrollBar.Value = NumberOfBytes;
         }
         private void ShowHexView_Click(object sender, RoutedEventArgs e)
         {
@@ -133,8 +127,6 @@ namespace ProbyteEditClient
 
         private void RenderBytes()
         {
-            DataScrollBar.Value = Reader.Position;
-
             var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
             AddressTextBox.Text = view.Address;
@@ -155,40 +147,38 @@ namespace ProbyteEditClient
         }
         private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            var newPosition = (long)DataScrollBar.Value;
+            var currnetPosition = (long)DataScrollBar.Value;
 
+            long alignedPosition = 0;
             var moveBackward = e.Delta > 0;
             if (moveBackward)
             {
-                newPosition -= BytesPerLine;
-                newPosition = Position.AlignBackward(newPosition);
+                var newPosition = currnetPosition - BytesPerLine;
+                alignedPosition = Position.AlignBackward(newPosition);
             }
             if (!moveBackward)
             {
-                newPosition += BytesPerLine;
-                newPosition = Position.AlignForward(newPosition);
+                var newPosition = currnetPosition + BytesPerLine;
+                alignedPosition = Position.AlignForward(newPosition);
             }
 
-            BytesRead = Reader.ReadAt(newPosition, FileBytes);
-            RenderBytes();
-
-            PositionTextBlock.Text = Reader.Position.ToString();
+            var isOverflow = alignedPosition > DataScrollBar.Maximum;
+            if (isOverflow)
+            {
+                DataScrollBar.Value = DataScrollBar.Maximum;
+            }
+            if (!isOverflow)
+            {
+                DataScrollBar.Value = alignedPosition;
+            }
         }
 
         private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var newPosition = (long)DataScrollBar.Value;
-            var moveForward = e.OldValue > e.NewValue;
-            if (moveForward)
-            {
-                newPosition = Position.AlignForward(newPosition);
-            }
-            if (!moveForward)
-            {
-                newPosition = Position.AlignBackward(newPosition);
-            }
+            var alignedPosition = Position.AlignBackward(newPosition);
 
-            BytesRead = Reader.ReadAt(newPosition, FileBytes);
+            BytesRead = Reader.ReadAt(alignedPosition, FileBytes);
             RenderBytes();
 
             PositionTextBlock.Text = Reader.Position.ToString();
