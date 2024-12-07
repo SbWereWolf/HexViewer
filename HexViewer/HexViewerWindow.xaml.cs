@@ -59,35 +59,25 @@ namespace ProbyteEditClient
             if (BytesRead > 0)
             {
                 ViewTemplate.AsHex();
-                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-                AddressTextBox.Text = view.Address;
-                DataTextBox.Text = view.Display;
-                AsciiTextBox.Text = view.Ascii;
+                RenderBytes();
             }
         }
         private void ShowHexView_Click(object sender, RoutedEventArgs e)
         {
             ViewTemplate.AsHex();
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-            DataTextBox.Text = view.Display;
+            RenderDisplay();
         }
 
         private void ShowDecimalView_Click(object sender, RoutedEventArgs e)
         {
             ViewTemplate.AsDecimal();
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-            DataTextBox.Text = view.Display;
+            RenderDisplay();
         }
 
         private void ShowBinaryView_Click(object sender, RoutedEventArgs e)
         {
             ViewTemplate.AsBinary();
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-            DataTextBox.Text = view.Display;
+            RenderDisplay();
         }
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -159,6 +149,24 @@ namespace ProbyteEditClient
             searchWindow.Show(); // Открываем окно без блокировки основного окна
         }
 
+        private void RenderBytes()
+        {
+            DataScrollBar.Value = Reader.Position;
+
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+
+            AddressTextBox.Text = view.Address;
+            DataTextBox.Text = view.Display;
+            AsciiTextBox.Text = view.Ascii;
+        }
+
+        private void RenderDisplay()
+        {
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+
+            DataTextBox.Text = view.Display;
+        }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Source.Dispose();
@@ -175,13 +183,7 @@ namespace ProbyteEditClient
             if (allow)
             {
                 BytesRead = Reader.Backward(FileBytes);
-                DataScrollBar.Value = Reader.Position;
-
-                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-                AddressTextBox.Text = view.Address;
-                DataTextBox.Text = view.Display;
-                AsciiTextBox.Text = view.Ascii;
+                RenderBytes();
             }
         }
 
@@ -196,13 +198,7 @@ namespace ProbyteEditClient
             if (allow)
             {
                 BytesRead = Reader.Forward(FileBytes);
-                DataScrollBar.Value = Reader.Position;
-
-                var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-                AddressTextBox.Text = view.Address;
-                DataTextBox.Text = view.Display;
-                AsciiTextBox.Text = view.Ascii;
+                RenderBytes();
 
             }
         }
