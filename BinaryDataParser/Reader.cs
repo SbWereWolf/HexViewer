@@ -33,6 +33,21 @@ namespace BinaryDataParser
             return allow;
         }
 
+        public int ReadAt(long position, byte[] dataFrame)
+        {
+
+            position -= dataFrame.LongLength;
+            if (position < 0)
+            {
+                position = 0;
+            }
+
+            Source.Seek(position, SeekOrigin.Begin);
+            int bytesRead = Source.Read(dataFrame);
+
+            return bytesRead;
+        }
+
         public int Backward(byte[] dataFrame)
         {
             var mayBackward = Source.Position >= dataFrame.Length * 2;
