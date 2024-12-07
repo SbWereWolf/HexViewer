@@ -44,6 +44,7 @@ namespace ProbyteEditClient
             DataScrollBar.Value = 0;
             DataScrollBar.SmallChange = NumberOfBytes;
             DataScrollBar.LargeChange = NumberOfBytes;
+            DataScrollBar.ViewportSize=NumberOfBytes;
 
             /* init reader and template */
             Reader = new BinaryDataParser.Reader(Source, FileLength);
@@ -205,9 +206,12 @@ namespace ProbyteEditClient
 
         private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            var newPosition = (int)DataScrollBar.Value;
-            PositionTextBlock.Text = newPosition.ToString();
+            var newPosition = (long)DataScrollBar.Value;
 
+            BytesRead = Reader.ReadAt(newPosition, FileBytes);
+            RenderBytes();
+
+            PositionTextBlock.Text = Reader.Position.ToString();
         }
     }
 }
