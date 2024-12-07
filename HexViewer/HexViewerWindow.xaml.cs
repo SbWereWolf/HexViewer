@@ -147,36 +147,26 @@ namespace ProbyteEditClient
         }
         private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            var currnetPosition = (long)DataScrollBar.Value;
+            var currentPosition = (long)DataScrollBar.Value;
 
-            long alignedPosition = 0;
             var moveBackward = e.Delta > 0;
+            long newPosition = 0;
             if (moveBackward)
             {
-                var newPosition = currnetPosition - BytesPerLine;
-                alignedPosition = Position.AlignBackward(newPosition);
+                newPosition = currentPosition - BytesPerLine;
             }
             if (!moveBackward)
             {
-                var newPosition = currnetPosition + BytesPerLine;
-                alignedPosition = Position.AlignForward(newPosition);
+                newPosition = currentPosition + BytesPerLine;
             }
 
-            var isOverflow = alignedPosition > DataScrollBar.Maximum;
-            if (isOverflow)
-            {
-                DataScrollBar.Value = DataScrollBar.Maximum;
-            }
-            if (!isOverflow)
-            {
-                DataScrollBar.Value = alignedPosition;
-            }
+            DataScrollBar.Value = newPosition;
         }
 
         private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var newPosition = (long)DataScrollBar.Value;
-            var alignedPosition = Position.AlignBackward(newPosition);
+            var alignedPosition = Position.Align(newPosition);
 
             BytesRead = Reader.ReadAt(alignedPosition, FileBytes);
             RenderBytes();

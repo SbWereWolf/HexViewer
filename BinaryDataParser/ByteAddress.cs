@@ -11,20 +11,12 @@ namespace BinaryDataParser
             Offset = offset;
         }
 
-        public long AlignBackward(long positIon)
+        public long Align(long positIon)
         {
             positIon = (long)Math.Ceiling(
                                 ((double)positIon) / Offset
                                 ) * Offset;
             return positIon;
-        }
-
-        public long AlignForward(long position)
-        {
-            position = (long)Math.Floor(
-                                ((double)position) / Offset
-                                ) * Offset;
-            return position;
         }
     }
 }
