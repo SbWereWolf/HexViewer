@@ -24,30 +24,30 @@
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0" Grid.ColumnSpan="5">
             <!-- Кнопка для Decimal представления -->
             <Button x:Name="ShowDecimal" Width="50" Height="30" Margin="5,0,5,0" Click="ShowDecimalView_Click">
-                <Image Source="decimal_icon.png"/>
+                <Image x:Name="DexImage" Source="decimal_icon.png"/>
             </Button>
 
             <!-- Кнопка для Hex представления -->
             <Button x:Name="ShowHex" Width="50" Height="30" Margin="5,0,5,0" Click="ShowHexView_Click">
-                <Image Source="hex_icon.png"/>
+                <Image x:Name="HexImage" Source="hex_icon.png"/>
             </Button>
 
             <!-- Кнопка для Binary представления -->
             <Button x:Name="ShowBinary" Width="50" Height="30" Margin="5,0,5,0" Click="ShowBinaryView_Click">
-                <Image Source="binary_icon.png"/>
+                <Image x:Name="BinImage" Source="binary_icon.png"/>
             </Button>
 
             <!-- Кнопка для вызова окна поиска с новой иконкой -->
             <Button x:Name="OpenSearchWindow" Width="50" Height="30" Margin="5,0,5,0" Click="OpenSearchWindow_Click">
-                <Image Source="find.png"/>
+                <Image x:Name="SearchImage" Source="find.png"/>
             </Button>
             <Button x:Name="Backward" Width="50" Height="30" Margin="5,0,5,0" Click="Backward_Click">
-                <Image Source="backward.png"/>
+                <Image x:Name="BackwardImage" Source="backward.png"/>
             </Button>
             <Button x:Name="Forward" Width="50" Height="30" Margin="5,0,5,0" Click="Forward_Click">
-                <Image Source="forward.png"/>
+                <Image x:Name="ForwardImage" Source="forward.png"/>
             </Button>
-            <TextBlock x:Name="PositionTextBlock" TextWrapping="Wrap" Text="TextBlock"/>
+            <TextBlock x:Name="PositionTextBlock" TextWrapping="NoWrap" Text="PositionTextBlock"/>
         </StackPanel>
 
         <!-- Область для отображения адресов -->
@@ -62,7 +62,7 @@
         </ScrollViewer>
 
         <!-- Область для отображения HEX данных -->
-        <ScrollViewer x:Name="HexScrollViewer" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+        <ScrollViewer x:Name="HexScrollViewer" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
             <TextBox x:Name="DataTextBox"
                      FontFamily="Consolas"
                      FontSize="12"
