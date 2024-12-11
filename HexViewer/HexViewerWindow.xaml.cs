@@ -8,7 +8,7 @@ namespace ProbyteEditClient
 {
     public partial class HexViewerWindow : Window
     {
-        private static readonly int BytesPerLine = 16;// Количество байтов на строку
+        private static readonly int BytesPerLine = 16;
         private static readonly int NumberOfLines = 16 * 2;
         private static readonly int NumberOfBytes = BytesPerLine * NumberOfLines;
         private readonly byte[] FileBytes;
@@ -75,6 +75,54 @@ namespace ProbyteEditClient
             RenderDisplay();
         }
 
+        private void RenderBytes()
+        {
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+
+            AddressTextBox.Text = view.Address;
+            DataTextBox.Text = view.Display;
+            AsciiTextBox.Text = view.Ascii;
+        }
+
+        private void RenderDisplay()
+        {
+            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+
+            DataTextBox.Text = view.Display;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Source.Dispose();
+        }
+        private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var currentPosition = (long)DataScrollBar.Value;
+
+            var moveBackward = e.Delta > 0;
+            long newPosition = 0;
+            if (moveBackward)
+            {
+                newPosition = currentPosition - BytesPerLine;
+            }
+            if (!moveBackward)
+            {
+                newPosition = currentPosition + BytesPerLine;
+            }
+
+            DataScrollBar.Value = newPosition;
+        }
+
+        private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var newPosition = (long)DataScrollBar.Value;
+            var alignedPosition = Position.Align(newPosition);
+
+            BytesRead = Reader.ReadAt(alignedPosition, FileBytes);
+            RenderBytes();
+
+            PositionTextBlock.Text = Reader.Position.ToString();
+        }
         // Метод для подсветки всех найденных значений
         public void HighlightFoundValues(List<int> foundIndices, string searchText)
         {
@@ -123,55 +171,6 @@ namespace ProbyteEditClient
                 Owner = this // Устанавливаем родительское окно
             };
             searchWindow.Show(); // Открываем окно без блокировки основного окна
-        }
-
-        private void RenderBytes()
-        {
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-            AddressTextBox.Text = view.Address;
-            DataTextBox.Text = view.Display;
-            AsciiTextBox.Text = view.Ascii;
-        }
-
-        private void RenderDisplay()
-        {
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
-
-            DataTextBox.Text = view.Display;
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Source.Dispose();
-        }
-        private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
-        {
-            var currentPosition = (long)DataScrollBar.Value;
-
-            var moveBackward = e.Delta > 0;
-            long newPosition = 0;
-            if (moveBackward)
-            {
-                newPosition = currentPosition - BytesPerLine;
-            }
-            if (!moveBackward)
-            {
-                newPosition = currentPosition + BytesPerLine;
-            }
-
-            DataScrollBar.Value = newPosition;
-        }
-
-        private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            var newPosition = (long)DataScrollBar.Value;
-            var alignedPosition = Position.Align(newPosition);
-
-            BytesRead = Reader.ReadAt(alignedPosition, FileBytes);
-            RenderBytes();
-
-            PositionTextBlock.Text = Reader.Position.ToString();
         }
     }
 }
