@@ -120,7 +120,7 @@ namespace BinaryDataParser
                         if (isValidByte)
                         {
                             word = Convert
-                                .ToString(fileBytes[i + j], settings.Basis)
+                                .ToString(fileBytes[byteIndex], settings.Basis)
                                 .ToUpper()
                                 .PadLeft(settings.Format,'0') + " ";
                         }
