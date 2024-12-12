@@ -120,7 +120,7 @@ namespace ProbyteEditClient
         }
         public void ScrollToFoundValue(long foundIndex)
         {
-            var position = foundIndex - NumberOfBytes / 2;
+            var position = foundIndex + BytesPerLine + NumberOfBytes / 2;
             if (position < 0)
             {
                 position = 0;
@@ -129,6 +129,7 @@ namespace ProbyteEditClient
         }
         public void SelectFoundValue(string pattern)
         {
+            this.Activate();
             DataTextBox.Focus();
             var index = DataTextBox.Text.IndexOf(pattern, 0);
             if (index != -1)
