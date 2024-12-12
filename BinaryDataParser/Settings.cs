@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BinaryDataParser
+﻿namespace BinaryDataParser
 {
-    internal class Settings
+    public class Settings
     {
         private const int HexFormat = 2;
         private const string HexPlaceholder = "   ";
