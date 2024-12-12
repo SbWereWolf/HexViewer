@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 
 namespace ProbyteEditClient
@@ -62,19 +63,16 @@ namespace ProbyteEditClient
             ViewTemplate.AsHex();
             RenderDisplay();
         }
-
         private void ShowDecimalView_Click(object sender, RoutedEventArgs e)
         {
             ViewTemplate.AsDecimal();
             RenderDisplay();
         }
-
         private void ShowBinaryView_Click(object sender, RoutedEventArgs e)
         {
             ViewTemplate.AsBinary();
             RenderDisplay();
         }
-
         private void RenderBytes()
         {
             var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
@@ -83,14 +81,12 @@ namespace ProbyteEditClient
             DataTextBox.Text = view.Display;
             AsciiTextBox.Text = view.Ascii;
         }
-
         private void RenderDisplay()
         {
             var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
 
             DataTextBox.Text = view.Display;
         }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Source.Dispose();
@@ -112,7 +108,6 @@ namespace ProbyteEditClient
 
             DataScrollBar.Value = newPosition;
         }
-
         private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var newPosition = (long)DataScrollBar.Value;
@@ -123,50 +118,28 @@ namespace ProbyteEditClient
 
             PositionTextBlock.Text = Reader.Position.ToString();
         }
-        // Метод для подсветки всех найденных значений
-        public void HighlightFoundValues(List<int> foundIndices, string searchText)
+        public void ScrollToFoundValue(long foundIndex)
         {
-            if (foundIndices == null || foundIndices.Count == 0 || string.IsNullOrEmpty(searchText))
-                return;
-
-            // Устанавливаем фокус и выделяем все найденные значения
-            DataTextBox.Focus();
-            foreach (int foundIndex in foundIndices)
+            var position = foundIndex - NumberOfBytes / 2;
+            if (position < 0)
             {
-                if (foundIndex >= 0 && foundIndex < DataTextBox.Text.Length)
-                {
-                    DataTextBox.Select(foundIndex, searchText.Length);
-                }
+                position = 0;
+            }
+            DataScrollBar.Value = position;
+        }
+        public void SelectFoundValue(string pattern)
+        {
+            DataTextBox.Focus();
+            var index = DataTextBox.Text.IndexOf(pattern, 0);
+            if (index != -1)
+            {
+                DataTextBox.Select(index, pattern.Length);
             }
         }
-
-        // Метод для прокрутки к определенному значению, восстановленный
-        public void ScrollToFoundValue(int foundIndex, int length)
-        {
-            // Устанавливаем фокус на TextBox
-            DataTextBox.Focus();
-
-            // Выделяем текст от найденного индекса на длину искомого значения
-            DataTextBox.Select(foundIndex, length);
-
-            // Прокручиваем TextBox так, чтобы найденное значение было видно
-            DataTextBox.Dispatcher.Invoke(() =>
-            {
-                Rect foundRect = DataTextBox.GetRectFromCharacterIndex(foundIndex);
-
-                if (foundRect != Rect.Empty) // Проверяем, что Rect действителен
-                {
-                    // Рассчитываем вертикальное смещение, чтобы текст был в центре
-                    double targetOffset = foundRect.Top + DataTextBox.VerticalOffset - (DataTextBox.ViewportHeight / 2);
-                    DataTextBox.ScrollToVerticalOffset(Math.Max(0, targetOffset));
-                }
-            }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-        }
-
         // Метод для открытия окна поиска
         private void OpenSearchWindow_Click(object sender, RoutedEventArgs e)
         {
-            SearchWindow searchWindow = new(DataTextBox.Text, this)
+            SearchWindow searchWindow = new(this, Source)
             {
                 Owner = this // Устанавливаем родительское окно
             };

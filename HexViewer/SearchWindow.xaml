@@ -41,7 +41,7 @@
                                     Width="*"
                                     IsReadOnly="True" />
                 <DataGridTextColumn Header="Найденные данные"
-                                    Binding="{Binding HexValue}"
+                                    Binding="{Binding Needle}"
                                     Width="*"
                                     IsReadOnly="True" />
             </DataGrid.Columns>
