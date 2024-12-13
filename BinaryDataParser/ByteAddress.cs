@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BinaryDataParser
+namespace DataView
 {
     public class ByteAddress
     {

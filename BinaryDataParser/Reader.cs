@@ -1,7 +1,7 @@
 
 using System.IO;
 
-namespace BinaryDataParser
+namespace DataView
 {
     public class Reader
     {

@@ -2,7 +2,7 @@
 using System.Text;
 using Visualization;
 
-namespace BinaryDataParser
+namespace DataView
 {
     public class TemplateEngine
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace BinaryDataParser
+namespace DataView
 {
     public class View
     {
