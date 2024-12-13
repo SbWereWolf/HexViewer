@@ -118,7 +118,7 @@ namespace ProbyteEditClient
 
             PositionTextBlock.Text = Reader.Position.ToString();
         }
-        public void ScrollToFoundValue(long foundIndex)
+        public void ScrollToFoundValue(long foundIndex, string pattern)
         {
             var position = foundIndex + BytesPerLine + NumberOfBytes / 2;
             if (position < 0)
@@ -126,9 +126,6 @@ namespace ProbyteEditClient
                 position = 0;
             }
             DataScrollBar.Value = position;
-        }
-        public void SelectFoundValue(string pattern)
-        {
             this.Activate();
             DataTextBox.Focus();
             var index = DataTextBox.Text.IndexOf(pattern, 0);
