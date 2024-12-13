@@ -28,8 +28,7 @@
                   HeadersVisibility="Column"
                   Grid.Row="1"
                   Margin="10"
-                  SelectionMode="Single"
-                  SelectionChanged="SearchResultsDataGrid_SelectionChanged">
+                  SelectionMode="Single" MouseDoubleClick="SearchResultsDataGrid_MouseDoubleClick" >
             <!-- Определение столбцов для DataGrid -->
             <DataGrid.Columns>
                 <DataGridTextColumn Header="№"
@@ -41,7 +40,7 @@
                                     Width="*"
                                     IsReadOnly="True" />
                 <DataGridTextColumn Header="Найденные данные"
-                                    Binding="{Binding Needle}"
+                                    Binding="{Binding DataView}"
                                     Width="*"
                                     IsReadOnly="True" />
             </DataGrid.Columns>

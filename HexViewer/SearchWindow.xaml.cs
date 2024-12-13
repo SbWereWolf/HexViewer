@@ -172,5 +172,13 @@ namespace ProbyteEditClient
         {
             this.Close(); // Закрывает текущее окно поиска
         }
+
+        private void SearchResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (SearchResultsDataGrid.SelectedItem is SearchResult selectedResult)
+            {
+                parentWindow.ScrollToFoundValue(selectedResult.Address, selectedResult.DataView);
+            }
+        }
     }
 }
