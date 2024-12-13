@@ -72,7 +72,6 @@ namespace DataView
             Address.Clear();
             for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
             {
-                // Адрес строки
                 Address.AppendFormat(AddressFormat, i + position - bytesRead);
                 Address.AppendLine();
             }
@@ -83,7 +82,7 @@ namespace DataView
 
         private string RenderData(byte[] fileBytes, int bytesRead, Mode mode)
         {
-            var settings = Settings.ChooseSettings(mode);
+            var settings = SettingsFactory.PickUpSettings(mode);
 
             Display.Clear();
             var word = "";

@@ -42,7 +42,8 @@ namespace DataSearch
             }
 
             // Определяем, в каком формате производить поиск
-            var settings = Settings.SetupSettings(selectedFormat);
+            var settings = 
+                SettingsFactory.ChooseSuitableSettings(selectedFormat);
 
             var length = search.Length;
             var stringRemainder = length % settings.Format;
