@@ -1,44 +1,34 @@
 ﻿using System;
 using System.Text;
+using Visualization;
 
 namespace BinaryDataParser
 {
     public class TemplateEngine
     {
-        private readonly int BytesPerLine = 16;// Количество байтов на строку
+        private readonly int BytesPerLine;
         private const char WrongAsciiSymbol = '•';
         private const char AsciiSymbolPlaceholder = ' ';
         private const string AddressFormat = "{0:X8}";
-
-        private Mode ViewingMode = Mode.Hex;
-        private readonly Settings Hex;
-        private readonly Settings Dec;
-        private readonly Settings Bin;
 
         private readonly StringBuilder Address = new();
         private readonly StringBuilder Display = new();
         private readonly StringBuilder Ascii = new();
 
-        public enum Mode
+        public TemplateEngine(int bytesPerLine)
         {
-            Binary,
-            Decimal,
-            Hex
-        }
-
-        public TemplateEngine(int bytesPerLine, Mode mode)
-        {
-            ViewingMode = mode;
             BytesPerLine = bytesPerLine;
-            Hex = Settings.AsHex();
-            Dec = Settings.AsDecamal();
-            Bin = Settings.AsBinary();
         }
 
         // Метод для обновления HEX представления
-        public View Render(byte[] fileBytes, int bytesRead, long position)
+        public View Render(
+            byte[] fileBytes, 
+            int bytesRead, 
+            long position, 
+            Mode mode
+            )
         {
-            var display = RenderData(fileBytes, bytesRead);
+            var display = RenderData(fileBytes, bytesRead, mode);
             var address = RenderAddress(fileBytes, bytesRead, position);
             var ascii = RenderAsciiView(fileBytes, bytesRead);
 
@@ -72,7 +62,7 @@ namespace BinaryDataParser
                 }
             }
 
-            var result = Ascii.ToString();  
+            var result = Ascii.ToString();
 
             return result;
         }
@@ -91,21 +81,9 @@ namespace BinaryDataParser
             return result;
         }
 
-        private string RenderData(byte[] fileBytes, int bytesRead)
+        private string RenderData(byte[] fileBytes, int bytesRead, Mode mode)
         {
-            Settings settings = Hex;
-            switch (ViewingMode)
-            {
-                case Mode.Binary:
-                    settings = Bin;
-                    break;
-                case Mode.Decimal:
-                    settings = Dec;
-                    break;
-                case Mode.Hex:
-                    settings = Hex;
-                    break;
-            }
+            var settings = Settings.ChooseSettings(mode);
 
             Display.Clear();
             var word = "";
@@ -122,7 +100,7 @@ namespace BinaryDataParser
                             word = Convert
                                 .ToString(fileBytes[byteIndex], settings.Basis)
                                 .ToUpper()
-                                .PadLeft(settings.Format,'0') + " ";
+                                .PadLeft(settings.Format, '0') + " ";
                         }
                         if (!isValidByte)
                         {
@@ -136,21 +114,6 @@ namespace BinaryDataParser
             }
 
             return Display.ToString();
-        }
-
-        public void AsHex()
-        {
-            ViewingMode = Mode.Hex;
-        }
-
-        public void AsDecimal()
-        {
-            ViewingMode = Mode.Decimal;
-        }
-
-        public void AsBinary()
-        {
-            ViewingMode = Mode.Binary;
         }
     }
 }

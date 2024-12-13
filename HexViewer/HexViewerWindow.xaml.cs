@@ -1,9 +1,8 @@
 ﻿
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using BinaryDataParser;
 using System.Windows;
+using Visualization;
 
 namespace ProbyteEditClient
 {
@@ -17,9 +16,10 @@ namespace ProbyteEditClient
         private readonly FileStream Source;
         private readonly long FileLength;
         private const string NoData = "Нет данных для отображения.";
-        private readonly BinaryDataParser.Reader Reader;
-        private readonly BinaryDataParser.TemplateEngine ViewTemplate;
-        private readonly BinaryDataParser.ByteAddress Position;
+        private readonly Reader Reader;
+        private readonly TemplateEngine ViewTemplate;
+        private readonly ByteAddress Position;
+        Mode ViewMode = Mode.Hexadecimal;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -41,41 +41,53 @@ namespace ProbyteEditClient
             /* init position indicator */
             DataScrollBar.Maximum = FileLength;
             DataScrollBar.Minimum = 0;
-            DataScrollBar.Value = 0;
             DataScrollBar.SmallChange = BytesPerLine;
             DataScrollBar.LargeChange = NumberOfBytes;
             DataScrollBar.ViewportSize = NumberOfBytes;
 
             /* init reader and template */
-            Reader = new BinaryDataParser.Reader(Source, FileLength);
-            ViewTemplate = new BinaryDataParser.TemplateEngine(
-                BytesPerLine,
-                BinaryDataParser.TemplateEngine.Mode.Hex
+            Reader = new Reader(Source, FileLength);
+            ViewTemplate = new TemplateEngine(
+                BytesPerLine
                 );
-            Position = new BinaryDataParser.ByteAddress(BytesPerLine);
+            Position = new ByteAddress(BytesPerLine);
 
             /* initial read forward */
             FileBytes = new byte[NumberOfBytes];
             DataScrollBar.Value = NumberOfBytes;
         }
-        private void ShowHexView_Click(object sender, RoutedEventArgs e)
+        private void ShowHexView_Click(
+            object sender,
+            RoutedEventArgs e
+            )
         {
-            ViewTemplate.AsHex();
+            ViewMode = Mode.Hexadecimal;
             RenderDisplay();
         }
-        private void ShowDecimalView_Click(object sender, RoutedEventArgs e)
+        private void ShowDecimalView_Click(
+            object sender,
+            RoutedEventArgs e
+            )
         {
-            ViewTemplate.AsDecimal();
+            ViewMode = Mode.Decimal;
             RenderDisplay();
         }
-        private void ShowBinaryView_Click(object sender, RoutedEventArgs e)
+        private void ShowBinaryView_Click(
+            object sender,
+            RoutedEventArgs e
+            )
         {
-            ViewTemplate.AsBinary();
+            ViewMode = Mode.Binary;
             RenderDisplay();
         }
         private void RenderBytes()
         {
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+            var view = ViewTemplate.Render(
+                FileBytes,
+                BytesRead,
+                Reader.Position,
+                ViewMode
+                );
 
             AddressTextBox.Text = view.Address;
             DataTextBox.Text = view.Display;
@@ -83,15 +95,26 @@ namespace ProbyteEditClient
         }
         private void RenderDisplay()
         {
-            var view = ViewTemplate.Render(FileBytes, BytesRead, Reader.Position);
+            var view = ViewTemplate.Render(
+                FileBytes,
+                BytesRead,
+                Reader.Position,
+                ViewMode
+                );
 
             DataTextBox.Text = view.Display;
         }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(
+            object sender,
+            System.ComponentModel.CancelEventArgs e
+            )
         {
             Source.Dispose();
         }
-        private void DataTextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private void DataTextBox_MouseWheel(
+            object sender,
+            System.Windows.Input.MouseWheelEventArgs e
+            )
         {
             var currentPosition = (long)DataScrollBar.Value;
 
@@ -108,7 +131,10 @@ namespace ProbyteEditClient
 
             DataScrollBar.Value = newPosition;
         }
-        private void DataScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void DataScrollBar_ValueChanged(
+            object sender,
+            RoutedPropertyChangedEventArgs<double> e
+            )
         {
             var newPosition = (long)DataScrollBar.Value;
             var alignedPosition = Position.Align(newPosition);
@@ -120,7 +146,9 @@ namespace ProbyteEditClient
         }
         public void ScrollToFoundValue(long foundIndex, string pattern)
         {
-            var position = foundIndex + BytesPerLine + NumberOfBytes / 2;
+            var position = foundIndex
+                + BytesPerLine
+                + NumberOfBytes / 2;
             if (position < 0)
             {
                 position = 0;
@@ -135,13 +163,18 @@ namespace ProbyteEditClient
             }
         }
         // Метод для открытия окна поиска
-        private void OpenSearchWindow_Click(object sender, RoutedEventArgs e)
+        private void OpenSearchWindow_Click(
+            object sender,
+            RoutedEventArgs e
+            )
         {
+            // Устанавливаем родительское окно
             SearchWindow searchWindow = new(this, Source)
             {
-                Owner = this // Устанавливаем родительское окно
+                Owner = this
             };
-            searchWindow.Show(); // Открываем окно без блокировки основного окна
+            // Открываем окно без блокировки основного окна
+            searchWindow.Show();
         }
     }
 }

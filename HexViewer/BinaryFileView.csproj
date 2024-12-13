@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -14,7 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BinaryDataParser\BinaryDataParsing.csproj" />
+    <ProjectReference Include="..\BinaryDataParser\DataView.csproj" />
+    <ProjectReference Include="..\SearchStringValidation\DataSearch.csproj" />
   </ItemGroup>
 
   <ItemGroup>

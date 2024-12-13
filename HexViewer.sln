@@ -12,9 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryDataParsing", "BinaryDataParser\BinaryDataParsing.csproj", "{91A91AA9-4780-4738-BFB9-CBB36A885C8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataView", "BinaryDataParser\DataView.csproj", "{91A91AA9-4780-4738-BFB9-CBB36A885C8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchStringValidation", "SearchStringValidation\SearchStringValidation.csproj", "{1E79430F-D23A-4875-ACC4-0A60A88F3214}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSearch", "SearchStringValidation\DataSearch.csproj", "{1E79430F-D23A-4875-ACC4-0A60A88F3214}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Visualization", "Visualization\Visualization.csproj", "{B02AC9DA-1829-4A06-9E08-2F496F8FB7B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B02AC9DA-1829-4A06-9E08-2F496F8FB7B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B02AC9DA-1829-4A06-9E08-2F496F8FB7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B02AC9DA-1829-4A06-9E08-2F496F8FB7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B02AC9DA-1829-4A06-9E08-2F496F8FB7B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

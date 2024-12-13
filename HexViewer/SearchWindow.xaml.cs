@@ -2,182 +2,128 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Linq;
-using BinaryDataParser;
+using Visualization;
 using System.IO;
-using static BinaryDataParser.TemplateEngine;
+using DataSearch;
 
 namespace ProbyteEditClient
 {
     public partial class SearchWindow : Window
     {
-
-        // Класс для представления результатов поиска
         private class SearchResult
         {
-            public SearchResult(long index = 0, long address = 0, string patern = "")
+            public SearchResult(
+                long index = 0,
+                long address = 0,
+                string bytesView = ""
+                )
             {
                 Index = index;
                 Address = address;
-                Needle = patern;
+                BytesView = bytesView;
             }
 
             public long Index { get; }
             public long Address { get; }
-            public string Needle { get; }
+            public string BytesView { get; }
         }
 
         private readonly HexViewerWindow parentWindow;
-        private readonly FileStream Source;
+        private readonly SearchEngine searchEngine;
 
         public SearchWindow(HexViewerWindow parent, FileStream source)
         {
             InitializeComponent();
 
             this.parentWindow = parent;
-            Source = source;
+            searchEngine = new SearchEngine(source);
         }
 
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        private void SearchButton_Click(
+            object sender,
+            RoutedEventArgs e
+            )
         {
             string searchText = SearchBox.Text;
-            searchText = searchText.Replace(" ", string.Empty);
-            if (string.IsNullOrEmpty(searchText))
+            string selectedFormat =
+                (SearchFormatComboBox.SelectedItem as ComboBoxItem)?
+                .Content.ToString() ?? string.Empty;
+
+            SearchString? search = null;
+            try
             {
-                MessageBox.Show("Введите значение для поиска.");
-                return;
+                var fastory = new SearchStringFactory(
+                    searchText,
+                    selectedFormat
+                    );
+                search = fastory.Make();
             }
-
-            // Получение выбранного формата поиска
-            string? selectedFormat = (SearchFormatComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            // Определяем, в каком формате производить поиск
-            Settings settings;
-            switch (selectedFormat)
+            catch (Exception ex)
             {
-                case "Hex":
-                    settings = Settings.AsHex();
-                    break;
-
-                case "Decimal":
-                    settings = Settings.AsDecamal();
-                    break;
-
-                case "Binary":
-                    settings = Settings.AsBinary();
-                    break;
-
-                default:
-                    MessageBox.Show("Выберите формат поиска.");
-                    return;
-            }
-
-            int length = searchText.Length;
-            var stringRemainder = length % settings.Format;
-            if (stringRemainder != 0)
-            {
-                MessageBox.Show($"Строка не соответствует выбранному формату поиска. Количество цифр {length} должно быть пропорционально {settings.Format}.");
-                return;
-            }
-
-            SearchResultsDataGrid.ItemsSource = new List<SearchResult>();
-
-            var digits = Enumerable
-                .Range(0, length / settings.Format)
-                .Select(
-                i => searchText
-                .Substring(i * settings.Format, settings.Format)
-                );
-
-            var pattern = string.Join(" ", digits);
-            var numbers = new List<byte>();
-            foreach (var digit in digits)
-            {
-                var number = Convert.ToByte(digit, settings.Basis);
-                numbers.Add(number);
-            }
-
-            List<SearchResult> searchResults = new();
-            long foundIndex = 0;
-            long count = 1;
-
-            var needle = numbers.ToArray();
-
-            Source.Seek(0, SeekOrigin.Begin);
-
-            var needleLength = needle.Length;
-            var haystack = new byte[2 * needleLength];
-
-            var haystackSize = haystack.Length;
-
-            var validBytes = Source.Read(haystack);
-
-            while (validBytes >= needleLength)
-            {
-                var limit = validBytes - needleLength;
-                var i = 0;
-                for (i = 0; i <= limit; i++)
+                if (
+                    ex is WhiteSpaceSearchStringException
+                    || ex is InadequateSearchStringException
+                    || ex is UnknownFormatException
+                    )
                 {
-                    var isFound = FindBytes(haystack, i, needle);
-                    if (isFound)
-                    {
-                        foundIndex = Source.Position - validBytes + i;
-                        searchResults.Add(new SearchResult(count++, foundIndex, pattern));
-
-                        i += needleLength - 1;
-                    }
+                    MessageBox.Show(ex.Message);
+                    return;
                 }
 
-                var bytesRemainder = validBytes - i;
-                Array.Copy(haystack, i, haystack, 0, bytesRemainder);
-
-                var portion = new byte[2* needleLength- bytesRemainder];
-                var bytesRead = Source.Read(portion);
-                Array.Copy(portion, 0, haystack, bytesRemainder, bytesRead);
-
-                validBytes = bytesRemainder + bytesRead;
+                throw new RethrowException("", ex);
             }
 
-            if (searchResults.Count != 0)
+            if (search == null)
             {
-                SearchResultsDataGrid.ItemsSource = searchResults;
+                return;
             }
+
+            var foundAddresses =
+                searchEngine.FindAllOccurrences(search.Needle);
+
+            SearchResultsDataGrid.ItemsSource =
+                MakeSearchResult(foundAddresses, search.Pattern);
+        }
+
+        private List<SearchResult> MakeSearchResult(
+            long[] found,
+            string pattern
+            )
+        {
+            List<SearchResult> searchResults = new();
+            long count = 1;
+            foreach (var address in found)
+            {
+                searchResults
+                    .Add(new SearchResult(count++, address, pattern));
+            }
+
             if (searchResults.Count == 0)
             {
                 MessageBox.Show("Значение не найдено.");
             }
+
+            return searchResults;
         }
-
-        private static bool FindBytes(byte[] haystack, int i, byte[] needle)
+        private void CloseButton_Click(
+            object sender,
+            RoutedEventArgs e
+            )
         {
-            var needleLength = needle.Length;
-            var example = new byte[needleLength];
-            Array.Copy(haystack, i, example, 0, needleLength);
-            var isFound = needle.SequenceEqual(example);
-
-            return isFound;
+            this.Close();
         }
-
-        private void SearchResultsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SearchResultsDataGrid_MouseDoubleClick(
+            object sender,
+            System.Windows.Input.MouseButtonEventArgs e
+            )
         {
-            if (SearchResultsDataGrid.SelectedItem is SearchResult selectedResult)
+            if (SearchResultsDataGrid.SelectedItem is
+                SearchResult selectedResult)
             {
-                parentWindow.ScrollToFoundValue(selectedResult.Address);
-                parentWindow.SelectFoundValue(selectedResult.Needle);
-            }
-        }
-
-        // Метод для закрытия окна при нажатии на кнопку "Закрыть"
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close(); // Закрывает текущее окно поиска
-        }
-
-        private void SearchResultsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (SearchResultsDataGrid.SelectedItem is SearchResult selectedResult)
-            {
-                parentWindow.ScrollToFoundValue(selectedResult.Address, selectedResult.DataView);
+                parentWindow.ScrollToFoundValue(
+                    selectedResult.Address,
+                    selectedResult.BytesView
+                    );
             }
         }
     }
