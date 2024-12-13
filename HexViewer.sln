@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HexViewer", "HexViewer\HexViewer.csproj", "{9DF9C3A9-69FA-4186-9C1F-9074D7C534B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryFileView", "HexViewer\BinaryFileView.csproj", "{9DF9C3A9-69FA-4186-9C1F-9074D7C534B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47C0B6C4-4A69-47CC-BDE6-F8BE94D9D64F}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryDataParser", "BinaryDataParser\BinaryDataParser.csproj", "{91A91AA9-4780-4738-BFB9-CBB36A885C8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryDataParsing", "BinaryDataParser\BinaryDataParsing.csproj", "{91A91AA9-4780-4738-BFB9-CBB36A885C8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchStringValidation", "SearchStringValidation\SearchStringValidation.csproj", "{1E79430F-D23A-4875-ACC4-0A60A88F3214}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{91A91AA9-4780-4738-BFB9-CBB36A885C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91A91AA9-4780-4738-BFB9-CBB36A885C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91A91AA9-4780-4738-BFB9-CBB36A885C8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E79430F-D23A-4875-ACC4-0A60A88F3214}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
