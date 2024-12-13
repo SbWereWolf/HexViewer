@@ -39,7 +39,7 @@
 
             <!-- Кнопка для вызова окна поиска с новой иконкой -->
             <Button x:Name="OpenSearchWindow" Width="50" Height="30" Margin="5,0,5,0" Click="OpenSearchWindow_Click">
-                <Image x:Name="SearchImage" Source="find.png"/>
+                <Image x:Name="SearchImage" Source="find_icon.png"/>
             </Button>
             <TextBlock x:Name="PositionTextBlock" TextWrapping="NoWrap" Text="PositionTextBlock"/>
         </StackPanel>

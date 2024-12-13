@@ -10,7 +10,6 @@
   <ItemGroup>
     <None Remove="binary_icon.png" />
     <None Remove="decimal_icon.png" />
-    <None Remove="find.png" />
     <None Remove="hex_icon.png" />
   </ItemGroup>
 
@@ -25,7 +24,7 @@
     <Resource Include="decimal_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="find.png">
+    <Resource Include="find_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="hex_icon.png">
