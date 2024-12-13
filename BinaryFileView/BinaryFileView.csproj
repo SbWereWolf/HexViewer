@@ -14,8 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BinaryDataParser\DataView.csproj" />
-    <ProjectReference Include="..\SearchStringValidation\DataSearch.csproj" />
+    <ProjectReference Include="..\DataSearch\DataSearch.csproj" />
+    <ProjectReference Include="..\DataView\DataView.csproj" />
+    <ProjectReference Include="..\Visualization\Visualization.csproj" />
   </ItemGroup>
 
   <ItemGroup>
