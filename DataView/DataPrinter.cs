@@ -7,11 +7,11 @@ using Visualization;
 
 namespace DataView
 {
-    internal class DisplayPrinter : IProcessing
+    internal class DataPrinter : IProcessing
     {
         private readonly StringBuilder Display;
         private readonly Settings Settings;
-        public DisplayPrinter(Settings settings)
+        public DataPrinter(Settings settings)
         {
             Display = new StringBuilder();
             this.Settings = settings;

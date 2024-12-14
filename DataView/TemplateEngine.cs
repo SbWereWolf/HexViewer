@@ -7,9 +7,7 @@ namespace DataView
     public class TemplateEngine
     {
         private readonly int BytesPerLine;
-
         private readonly StringBuilder Address = new();
-
         public TemplateEngine(int bytesPerLine)
         {
             BytesPerLine = bytesPerLine;
@@ -23,7 +21,7 @@ namespace DataView
         {
             var settings = SettingsFactory.PickUpSettings(mode);
 
-            var dataPrinter = new DisplayPrinter(settings);
+            var dataPrinter = new DataPrinter(settings);
             RenderView(blockBytes, bytesRead, dataPrinter);
             var display = dataPrinter.Unload();
 
