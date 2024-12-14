@@ -7,80 +7,78 @@ namespace DataView
     public class TemplateEngine
     {
         private readonly int BytesPerLine;
-        private const char WrongAsciiSymbol = '•';
-        private const char AsciiSymbolPlaceholder = ' ';
 
         private readonly StringBuilder Address = new();
-        private readonly StringBuilder Display = new();
-        private readonly StringBuilder Ascii = new();
 
         public TemplateEngine(int bytesPerLine)
         {
             BytesPerLine = bytesPerLine;
         }
-
-        // Метод для обновления HEX представления
         public View Render(
-            byte[] fileBytes,
+            byte[] blockBytes,
             int bytesRead,
             long position,
             Mode mode
             )
         {
-            var display = RenderData(fileBytes, bytesRead, mode);
+            var settings = SettingsFactory.PickUpSettings(mode);
+
+            var dataPrinter = new DisplayPrinter(settings);
+            RenderView(blockBytes, bytesRead, dataPrinter);
+            var display = dataPrinter.Unload();
+
+
+            var asciiPrinter = new AsciiPrinter(settings);
+            RenderView(blockBytes, bytesRead, asciiPrinter);
+            var ascii  = asciiPrinter.Unload();
+
             var address = RenderAddress(
-                fileBytes,
+                blockBytes,
                 bytesRead,
                 position
                 );
-            var ascii = RenderAsciiView(fileBytes, bytesRead);
 
             var view = new View(address, display, ascii);
 
             return view;
         }
-
-        private string RenderAsciiView(byte[] fileBytes, int bytesRead)
+        private void RenderView(
+            byte[] blockBytes,
+            int bytesRead,
+            IProcessing printer
+            )
         {
-            Ascii.Clear();
-            for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
+            for (int i = 0; i < blockBytes.Length; i += BytesPerLine)
             {
                 if (i < bytesRead)
                 {
-                    // ASCII представление
                     for (int j = 0; j < BytesPerLine; j++)
                     {
-                        if (i + j < bytesRead)
+                        var byteIndex = i + j;
+                        var isValidByte = byteIndex < bytesRead;
+                        if (isValidByte)
                         {
-                            byte b = fileBytes[i + j];
-                            char c =
-                                b >= 32 && b <= 126
-                                ? (char)b
-                                : WrongAsciiSymbol;
-                            Ascii.Append(c);
+                            byte b = blockBytes[byteIndex];
+                            printer.ValidByte(b);
                         }
-                        else
+                        if (!isValidByte)
                         {
-                            Ascii.Append(AsciiSymbolPlaceholder);
+                            printer.InvalidByte();
                         }
                     }
-                    Ascii.AppendLine();
+                    printer.LineEnd();
                 }
             }
-
-            var result = Ascii.ToString();
-
-            return result;
         }
 
         private string RenderAddress(
-            byte[] fileBytes,
+            byte[] blockBytes,
             int bytesRead,
             long position
             )
         {
             Address.Clear();
-            for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
+            for (int i = 0; i < blockBytes.Length; i += BytesPerLine)
             {
                 Address.AppendFormat(
                     Settings.AddressFormat,
@@ -91,48 +89,6 @@ namespace DataView
 
             var result = Address.ToString();
             return result;
-        }
-
-        private string RenderData(
-            byte[] fileBytes,
-            int bytesRead,
-            Mode mode
-            )
-        {
-            var settings = SettingsFactory.PickUpSettings(mode);
-
-            Display.Clear();
-            var word = "";
-            for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
-            {
-                if (i < bytesRead)
-                {
-                    for (int j = 0; j < BytesPerLine; j++)
-                    {
-                        var byteIndex = i + j;
-                        var isValidByte = byteIndex < bytesRead;
-                        if (isValidByte)
-                        {
-                            word = Convert
-                                .ToString(
-                                fileBytes[byteIndex],
-                                settings.Basis
-                                )
-                                .ToUpper()
-                                .PadLeft(settings.Format, '0') + " ";
-                        }
-                        if (!isValidByte)
-                        {
-                            word = settings.Placeholder;
-                        }
-
-                        Display.Append(word);
-                    }
-                    Display.AppendLine();
-                }
-            }
-
-            return Display.ToString();
         }
     }
 }

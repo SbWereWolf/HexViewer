@@ -7,6 +7,8 @@
         public readonly string Placeholder;
         public readonly string Name;
         public const string AddressFormat = "0x{0:X8}";
+        public const char WrongAsciiSymbol = '•';
+        public const char AsciiSymbolPlaceholder = ' ';
 
         public Settings(
             int basis,
