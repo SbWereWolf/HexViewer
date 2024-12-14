@@ -20,11 +20,16 @@ namespace ProbyteEditClient
             {
                 Index = index;
                 Address = address;
+                AddressView = string.Format(
+                    Settings.AddressFormat,
+                    address
+                    );
                 BytesView = bytesView;
             }
 
             public long Index { get; }
             public long Address { get; }
+            public string AddressView { get; }
             public string BytesView { get; }
         }
 

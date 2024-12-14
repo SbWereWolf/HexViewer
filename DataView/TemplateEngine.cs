@@ -9,7 +9,6 @@ namespace DataView
         private readonly int BytesPerLine;
         private const char WrongAsciiSymbol = '•';
         private const char AsciiSymbolPlaceholder = ' ';
-        private const string AddressFormat = "{0:X8}";
 
         private readonly StringBuilder Address = new();
         private readonly StringBuilder Display = new();
@@ -22,14 +21,18 @@ namespace DataView
 
         // Метод для обновления HEX представления
         public View Render(
-            byte[] fileBytes, 
-            int bytesRead, 
-            long position, 
+            byte[] fileBytes,
+            int bytesRead,
+            long position,
             Mode mode
             )
         {
             var display = RenderData(fileBytes, bytesRead, mode);
-            var address = RenderAddress(fileBytes, bytesRead, position);
+            var address = RenderAddress(
+                fileBytes,
+                bytesRead,
+                position
+                );
             var ascii = RenderAsciiView(fileBytes, bytesRead);
 
             var view = new View(address, display, ascii);
@@ -50,7 +53,10 @@ namespace DataView
                         if (i + j < bytesRead)
                         {
                             byte b = fileBytes[i + j];
-                            char c = b >= 32 && b <= 126 ? (char)b : WrongAsciiSymbol;
+                            char c =
+                                b >= 32 && b <= 126
+                                ? (char)b
+                                : WrongAsciiSymbol;
                             Ascii.Append(c);
                         }
                         else
@@ -67,12 +73,19 @@ namespace DataView
             return result;
         }
 
-        private string RenderAddress(byte[] fileBytes, int bytesRead, long position)
+        private string RenderAddress(
+            byte[] fileBytes,
+            int bytesRead,
+            long position
+            )
         {
             Address.Clear();
             for (int i = 0; i < fileBytes.Length; i += BytesPerLine)
             {
-                Address.AppendFormat(AddressFormat, i + position - bytesRead);
+                Address.AppendFormat(
+                    Settings.AddressFormat,
+                    i + position - bytesRead
+                    );
                 Address.AppendLine();
             }
 
@@ -80,7 +93,11 @@ namespace DataView
             return result;
         }
 
-        private string RenderData(byte[] fileBytes, int bytesRead, Mode mode)
+        private string RenderData(
+            byte[] fileBytes,
+            int bytesRead,
+            Mode mode
+            )
         {
             var settings = SettingsFactory.PickUpSettings(mode);
 
@@ -97,7 +114,10 @@ namespace DataView
                         if (isValidByte)
                         {
                             word = Convert
-                                .ToString(fileBytes[byteIndex], settings.Basis)
+                                .ToString(
+                                fileBytes[byteIndex],
+                                settings.Basis
+                                )
                                 .ToUpper()
                                 .PadLeft(settings.Format, '0') + " ";
                         }

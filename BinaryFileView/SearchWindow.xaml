@@ -36,11 +36,11 @@
                                     Width="Auto"
                                     IsReadOnly="True" />
                 <DataGridTextColumn Header="Адрес"
-                                    Binding="{Binding Address}"
+                                    Binding="{Binding AddressView}"
                                     Width="*"
                                     IsReadOnly="True" />
                 <DataGridTextColumn Header="Найденные данные"
-                                    Binding="{Binding DataView}"
+                                    Binding="{Binding BytesView}"
                                     Width="*"
                                     IsReadOnly="True" />
             </DataGrid.Columns>
