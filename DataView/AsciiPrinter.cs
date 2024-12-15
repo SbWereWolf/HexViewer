@@ -16,7 +16,7 @@ namespace DataView
             Ascii = new StringBuilder();
             this.Settings = settings;
         }
-        public void ValidByte(byte b)
+        public void ValidByte(byte b, int offset)
         {
             char c =
                 b >= 32 && b <= 126

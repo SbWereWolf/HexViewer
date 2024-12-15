@@ -3,6 +3,7 @@ using System.IO;
 using DataView;
 using System.Windows;
 using Visualization;
+using System;
 
 namespace ProbyteEditClient
 {
@@ -17,9 +18,10 @@ namespace ProbyteEditClient
         private readonly long FileLength;
         private const string NoData = "Нет данных для отображения.";
         private readonly Reader Reader;
-        private readonly TemplateEngine ViewTemplate;
+        private readonly BytesProcessor ViewTemplate;
         private readonly ByteAddress Position;
         Mode ViewMode = Mode.Hexadecimal;
+        private long LastReadPosition;
 
         public HexViewerWindow(string binaryFilePath)
         {
@@ -47,7 +49,7 @@ namespace ProbyteEditClient
 
             /* init reader and template */
             Reader = new Reader(Source, FileLength);
-            ViewTemplate = new TemplateEngine(
+            ViewTemplate = new BytesProcessor(
                 BytesPerLine
                 );
             Position = new ByteAddress(BytesPerLine);
@@ -142,11 +144,12 @@ namespace ProbyteEditClient
             BytesRead = Reader.ReadAt(alignedPosition, FileBytes);
             RenderBytes();
 
-            PositionTextBlock.Text = Reader.Position.ToString();
+            LastReadPosition = Reader.Position;
+            PositionTextBlock.Text = LastReadPosition.ToString();
         }
-        public void ScrollToFoundValue(long foundIndex, string pattern)
+        public void ScrollToFoundValue(long address, int length)
         {
-            var position = foundIndex
+            var position = address
                 + BytesPerLine
                 + NumberOfBytes / 2;
             if (position < 0)
@@ -154,13 +157,24 @@ namespace ProbyteEditClient
                 position = 0;
             }
             DataScrollBar.Value = position;
+
+            var select = ViewTemplate.FindAddress(
+                LastReadPosition,
+                FileBytes,
+                BytesRead,
+                ViewMode,
+                address,
+                length
+                );
+
+
             this.Activate();
             DataTextBox.Focus();
-            var index = DataTextBox.Text.IndexOf(pattern, 0);
-            if (index != -1)
-            {
-                DataTextBox.Select(index, pattern.Length);
-            }
+
+            DataTextBox.Select(
+                select.Start,
+                select.Finish - select.Start
+                );
         }
         // Метод для открытия окна поиска
         private void OpenSearchWindow_Click(

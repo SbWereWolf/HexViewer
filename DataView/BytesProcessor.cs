@@ -4,13 +4,36 @@ using Visualization;
 
 namespace DataView
 {
-    public class TemplateEngine
+    public class BytesProcessor
     {
         private readonly int BytesPerLine;
         private readonly StringBuilder Address = new();
-        public TemplateEngine(int bytesPerLine)
+        public BytesProcessor(int bytesPerLine)
         {
             BytesPerLine = bytesPerLine;
+        }
+        public Selection FindAddress(
+            long position,
+            byte[] blockBytes,
+            int bytesRead,
+            Mode mode,
+            long address,
+            int length
+            )
+        {
+            var settings = SettingsFactory.PickUpSettings(mode);
+
+            var сorrector = new PositionСorrector(
+                settings,
+                address,
+                length,
+                position,
+                bytesRead
+                );
+            ProcessBytes(blockBytes, bytesRead, сorrector);
+            var select = сorrector.Unload();
+
+            return select;
         }
         public View Render(
             byte[] blockBytes,
@@ -22,13 +45,13 @@ namespace DataView
             var settings = SettingsFactory.PickUpSettings(mode);
 
             var dataPrinter = new DataPrinter(settings);
-            RenderView(blockBytes, bytesRead, dataPrinter);
+            ProcessBytes(blockBytes, bytesRead, dataPrinter);
             var display = dataPrinter.Unload();
 
 
             var asciiPrinter = new AsciiPrinter(settings);
-            RenderView(blockBytes, bytesRead, asciiPrinter);
-            var ascii  = asciiPrinter.Unload();
+            ProcessBytes(blockBytes, bytesRead, asciiPrinter);
+            var ascii = asciiPrinter.Unload();
 
             var address = RenderAddress(
                 blockBytes,
@@ -40,7 +63,7 @@ namespace DataView
 
             return view;
         }
-        private void RenderView(
+        private void ProcessBytes(
             byte[] blockBytes,
             int bytesRead,
             IProcessing printer
@@ -57,7 +80,7 @@ namespace DataView
                         if (isValidByte)
                         {
                             byte b = blockBytes[byteIndex];
-                            printer.ValidByte(b);
+                            printer.ValidByte(b, byteIndex);
                         }
                         if (!isValidByte)
                         {

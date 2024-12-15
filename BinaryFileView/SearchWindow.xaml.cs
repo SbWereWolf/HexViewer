@@ -13,13 +13,15 @@ namespace ProbyteEditClient
         private class SearchResult
         {
             public SearchResult(
-                long index = 0,
-                long address = 0,
-                string bytesView = ""
+                long index,
+                long address,
+                int length,
+                string bytesView
                 )
             {
                 Index = index;
                 Address = address;
+                Length = length;
                 AddressView = string.Format(
                     Settings.AddressFormat,
                     address
@@ -29,6 +31,7 @@ namespace ProbyteEditClient
 
             public long Index { get; }
             public long Address { get; }
+            public int Length { get; }
             public string AddressView { get; }
             public string BytesView { get; }
         }
@@ -87,11 +90,16 @@ namespace ProbyteEditClient
                 searchEngine.FindAllOccurrences(search.Needle);
 
             SearchResultsDataGrid.ItemsSource =
-                MakeSearchResult(foundAddresses, search.Pattern);
+                MakeSearchResult(
+                    foundAddresses,
+                search.Needle.Length,
+                search.Pattern
+                );
         }
 
         private List<SearchResult> MakeSearchResult(
             long[] found,
+            int length,
             string pattern
             )
         {
@@ -100,7 +108,9 @@ namespace ProbyteEditClient
             foreach (var address in found)
             {
                 searchResults
-                    .Add(new SearchResult(count++, address, pattern));
+                    .Add(
+                    new SearchResult(count++, address, length, pattern)
+                    );
             }
 
             if (searchResults.Count == 0)
@@ -127,8 +137,7 @@ namespace ProbyteEditClient
             {
                 parentWindow.ScrollToFoundValue(
                     selectedResult.Address,
-                    selectedResult.BytesView
-                    );
+                    selectedResult.Length);
             }
         }
     }

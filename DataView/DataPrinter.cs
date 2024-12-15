@@ -16,7 +16,7 @@ namespace DataView
             Display = new StringBuilder();
             this.Settings = settings;
         }
-        public void ValidByte(byte b)
+        public void ValidByte(byte b, int offset)
         {
             var word = Convert
                 .ToString(b, Settings.Basis)
